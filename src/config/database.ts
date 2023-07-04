@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 import Logger from './logger';
 
 const LOG = new Logger('database.ts');

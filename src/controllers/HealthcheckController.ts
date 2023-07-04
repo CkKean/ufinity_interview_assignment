@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 const HealthcheckController = Express.Router();
 
 const healthcheckHandler: RequestHandler = async (req, res) => {
-  return res.sendStatus(StatusCodes.OK);
+  return res.send(StatusCodes.OK);
 }
 
 HealthcheckController.get('/healthcheck', healthcheckHandler);

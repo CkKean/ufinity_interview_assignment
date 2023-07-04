@@ -1,12 +1,18 @@
-import Express, { RequestHandler } from 'express';
-import { StatusCodes } from 'http-status-codes';
+import Express, { NextFunction, RequestHandler } from "express";
 
-const HealthcheckController = Express.Router();
+const TeacherController = Express.Router();
 
-const healthcheckHandler: RequestHandler = async (req, res) => {
-  return res.sendStatus(StatusCodes.OK);
-}
+const create: RequestHandler = async (req, res, next: NextFunction) => {
+  try {
 
-HealthcheckController.get('/healthcheck', healthcheckHandler);
+    
 
-export default HealthcheckController;
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+TeacherController.post("/register", create);
+
+export default TeacherController;
