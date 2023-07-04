@@ -1,12 +1,12 @@
-import { Op, Sequelize } from "sequelize";
-import sequelize from "../config/database";
-import { STUDENT_STATUS, Student } from "../models/studentModel";
-import { TEACHER_STATUS, Teacher } from "../models/teacherModel";
+import { Op, Sequelize } from 'sequelize';
+import sequelize from '../config/database';
+import { STUDENT_STATUS, Student } from '../models/studentModel';
+import { TEACHER_STATUS, Teacher } from '../models/teacherModel';
 import {
   TEACHER_STUDENT_RELATIONSHIP_STATUS,
   TeacherStudentRelationship,
   TeacherStudentRelationshipModel,
-} from "../models/teacherStudentRelationshipModel";
+} from '../models/teacherStudentRelationshipModel';
 
 export class StudentService {
   register = async ({
@@ -27,7 +27,7 @@ export class StudentService {
             transaction: t,
           });
 
-          const studentId = student.get("student_id");
+          const studentId = student.get('student_id');
 
           await TeacherStudentRelationship.upsert(
             {
@@ -43,7 +43,7 @@ export class StudentService {
       await t.commit();
       return {
         status: true,
-        message: "Register student successfully.",
+        message: 'Register student successfully.',
       };
     } catch (error) {
       await t.rollback();
@@ -71,14 +71,14 @@ export class StudentService {
             attributes: [],
           },
         ],
-        attributes: [[Sequelize.col("student.student_email"), "student_email"]],
-        group: ["student.student_email"],
+        attributes: [[Sequelize.col('student.student_email'), 'student_email']],
+        group: ['student.student_email'],
       });
 
       return {
         status: true,
         data: students,
-        message: "Retrieve common student successfully.",
+        message: 'Retrieve common student successfully.',
       };
     } catch (error) {
       console.log(error);
@@ -104,7 +104,7 @@ export class StudentService {
       if (!student) {
         return {
           status: true,
-          message: "Suspend student successfully",
+          message: 'Suspend student successfully',
         };
       }
 
@@ -131,7 +131,7 @@ export class StudentService {
 
       return {
         status: true,
-        message: "Suspend student successfully",
+        message: 'Suspend student successfully',
       };
     } catch (error) {
       await t.rollback();
@@ -166,7 +166,7 @@ export class StudentService {
             attributes: [],
           },
         ],
-        attributes: [[Sequelize.col("student.student_email"), "student_email"]],
+        attributes: [[Sequelize.col('student.student_email'), 'student_email']],
         raw: true,
       });
 
@@ -184,7 +184,7 @@ export class StudentService {
       return {
         status: true,
         data: data,
-        message: "Retrieve student common successfully",
+        message: 'Retrieve student common successfully',
       };
     } catch (error) {
       console.log(error);

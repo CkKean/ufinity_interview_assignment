@@ -9,8 +9,8 @@ import {
   PrimaryKey,
   Table,
   Unique,
-} from "sequelize-typescript";
-import { TeacherStudentRelationship } from "./teacherStudentRelationshipModel";
+} from 'sequelize-typescript';
+import { TeacherStudentRelationship } from './teacherStudentRelationshipModel';
 
 export const TEACHER_STATUS = {
   INACTIVE: 0,
@@ -22,7 +22,7 @@ export interface TeacherCreateModel {
 }
 
 @Table({
-  tableName: "teacher",
+  tableName: 'teacher',
   timestamps: false,
 })
 export class Teacher extends Model<Teacher> {
@@ -52,6 +52,6 @@ export class Teacher extends Model<Teacher> {
   @Column(DataType.DATE)
   teacher_updated_at: Date;
 
-  @HasMany(() => TeacherStudentRelationship, "teacher_id")
+  @HasMany(() => TeacherStudentRelationship, 'teacher_id')
   teacher_student_relationship: TeacherStudentRelationship[];
 }

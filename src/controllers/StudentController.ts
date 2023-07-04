@@ -1,12 +1,12 @@
-import { NextFunction, RequestHandler } from "express";
-import { matchedData } from "express-validator";
-import { StatusCodes } from "http-status-codes";
+import { NextFunction, RequestHandler } from 'express';
+import { matchedData } from 'express-validator';
+import { StatusCodes } from 'http-status-codes';
 import {
   StudentNotificationRequest,
   StudentRegisterRequest,
-} from "../models/studentModel";
-import { StudentService } from "../services/studentService";
-import { TeacherService } from "../services/teacherService";
+} from '../models/studentModel';
+import { StudentService } from '../services/studentService';
+import { TeacherService } from '../services/teacherService';
 
 const teacherService = new TeacherService();
 const studentService = new StudentService();

@@ -1,7 +1,7 @@
-import { StatusCodes } from "http-status-codes";
-import ErrorBase from "../errors/ErrorBase";
-import { Teacher, TeacherCreateModel } from "../models/teacherModel";
-import ValidationHandler from "../utils/validationHandler";
+import { StatusCodes } from 'http-status-codes';
+import ErrorBase from '../errors/ErrorBase';
+import { Teacher, TeacherCreateModel } from '../models/teacherModel';
+import ValidationHandler from '../utils/validationHandler';
 
 export class TeacherService {
   create = async ({ teacher_email }: TeacherCreateModel) => {
@@ -12,7 +12,7 @@ export class TeacherService {
 
       return {
         status: true,
-        message: "Create teacher successfully",
+        message: 'Create teacher successfully',
       };
     } catch (error) {
       console.log(error);
@@ -23,25 +23,25 @@ export class TeacherService {
   getByEmail = async (email: string) => {
     try {
       if (!ValidationHandler.isValidEmailFormat(email)) {
-        throw new ErrorBase("Invalid teacher email.", StatusCodes.BAD_REQUEST);
+        throw new ErrorBase('Invalid teacher email.', StatusCodes.BAD_REQUEST);
       }
 
       const teacher = await Teacher.findOne({
         where: {
           teacher_email: email,
         },
-        attributes: ["teacher_id"],
+        attributes: ['teacher_id'],
         raw: true,
       });
 
       if (!teacher) {
-        throw new ErrorBase("Teacher does not exist.", StatusCodes.OK);
+        throw new ErrorBase('Teacher does not exist.', StatusCodes.OK);
       }
 
       return {
         status: true,
         data: teacher,
-        message: "Retrieve teacher successfully.",
+        message: 'Retrieve teacher successfully.',
       };
     } catch (error) {
       console.log(error);
