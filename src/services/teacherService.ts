@@ -1,12 +1,29 @@
-import { CustomError } from "../errors/CustomError";
-import { Teacher } from "../models/teacherModel";
+import { StatusCodes } from "http-status-codes";
+import ErrorBase from "../errors/ErrorBase";
+import { Teacher, TeacherCreateModel } from "../models/teacherModel";
 import ValidationHandler from "../utils/validationHandler";
 
 export class TeacherService {
+  create = async ({ teacher_email }: TeacherCreateModel) => {
+    try {
+      await Teacher.create({
+        teacher_email: teacher_email,
+      });
+
+      return {
+        status: true,
+        message: "Create teacher successfully",
+      };
+    } catch (error) {
+      console.log(error);
+      return { status: false, error };
+    }
+  };
+
   getByEmail = async (email: string) => {
     try {
       if (!ValidationHandler.isValidEmailFormat(email)) {
-        throw new CustomError("Invalid teacher email");
+        throw new ErrorBase("Invalid teacher email.", StatusCodes.BAD_REQUEST);
       }
 
       const teacher = await Teacher.findOne({
@@ -18,10 +35,7 @@ export class TeacherService {
       });
 
       if (!teacher) {
-        return {
-          status: false,
-          message: "Teacher does not exist.",
-        };
+        throw new ErrorBase("Teacher does not exist.", StatusCodes.OK);
       }
 
       return {
@@ -30,13 +44,8 @@ export class TeacherService {
         message: "Retrieve teacher successfully.",
       };
     } catch (error) {
-      return {
-        status: false,
-        message:
-          error instanceof CustomError
-            ? error.message
-            : "Retrieve teacher unsuccessfully.",
-      };
+      console.log(error);
+      return { status: false, error };
     }
   };
 }

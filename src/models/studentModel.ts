@@ -15,6 +15,12 @@ import {
 import { Teacher } from "./teacherModel";
 import { TeacherStudentRelationship } from "./teacherStudentRelationshipModel";
 
+export const STUDENT_STATUS = {
+  INACTIVE: 0,
+  ACTIVE: 1,
+  SUSPENDED: 2,
+};
+
 export interface StudentModel {
   student_id: number;
   student_email: string;
@@ -30,6 +36,10 @@ export interface StudentRegisterRequest {
   students: string[];
 }
 
+export interface StudentNotificationRequest {
+  teacher: string;
+  notification: string;
+}
 export interface StudentCreateModel {
   student_email: string;
 }
@@ -64,14 +74,6 @@ export class Student extends Model<Student> {
   @AllowNull(true)
   @Column(DataType.DATE)
   student_updated_at: Date;
-
-  @ForeignKey(() => Teacher)
-  @AllowNull(true)
-  @Column(DataType.INTEGER)
-  student_suspended_by: number;
-
-  @BelongsTo(() => Teacher, "student_suspended_by")
-  studentSuspendedBy: Teacher;
 
   @AllowNull(true)
   @Column(DataType.DATE)

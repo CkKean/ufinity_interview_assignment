@@ -12,6 +12,15 @@ import {
 } from "sequelize-typescript";
 import { TeacherStudentRelationship } from "./teacherStudentRelationshipModel";
 
+export const TEACHER_STATUS = {
+  INACTIVE: 0,
+  ACTIVE: 1,
+};
+
+export interface TeacherCreateModel {
+  teacher_email: string;
+}
+
 @Table({
   tableName: "teacher",
   timestamps: false,
@@ -28,10 +37,6 @@ export class Teacher extends Model<Teacher> {
   @Unique
   @Column(DataType.TEXT)
   teacher_email: string;
-
-  @AllowNull(false)
-  @Column(DataType.TEXT)
-  teacher_name: string;
 
   @AllowNull(false)
   @Default(1)

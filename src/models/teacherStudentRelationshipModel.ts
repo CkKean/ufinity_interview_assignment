@@ -14,6 +14,11 @@ import {
 import { Teacher } from "./teacherModel";
 import { Student } from "./studentModel";
 
+export const TEACHER_STUDENT_RELATIONSHIP_STATUS = {
+  INACTIVE: 0,
+  ACTIVE: 1,
+};
+
 export interface TeacherStudentRelationshipModel {
   teacher_student_relationship_id: number;
   teacher_id: number;
@@ -21,8 +26,6 @@ export interface TeacherStudentRelationshipModel {
   teacher_student_relationship_status: number;
   teacher_student_relationship_created_at: Date;
   teacher_student_relationship_updated_at: Date;
-  teacher_student_relationship_created_by: number;
-  teacher_student_relationship_updated_by: number;
 }
 
 export interface TeacherStudentRelationshipCreateModel {
@@ -72,20 +75,4 @@ export class TeacherStudentRelationship extends Model<TeacherStudentRelationship
   @AllowNull(true)
   @Column(DataType.DATE)
   teacher_student_relationship_updated_at: Date;
-
-  @ForeignKey(() => Teacher)
-  @AllowNull(false)
-  @Column(DataType.DATE)
-  teacher_student_relationship_created_by: number;
-
-  @BelongsTo(() => Teacher, "teacher_student_relationship_created_by")
-  createdBy: Teacher;
-
-  @ForeignKey(() => Teacher)
-  @AllowNull(true)
-  @Column(DataType.DATE)
-  teacher_student_relationship_updated_by: number;
-
-  @BelongsTo(() => Teacher, "teacher_student_relationship_updated_by")
-  updatedBy: Teacher;
 }

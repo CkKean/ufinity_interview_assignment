@@ -3,7 +3,7 @@ import ValidationHandler from "../utils/validationHandler";
 
 export const studentRule = {
   forRegister: [
-    check("teacher", "Teacheremail is required.")
+    check("teacher", "Teacher email is required.")
       .notEmpty()
       .bail()
       .isEmail()
@@ -22,7 +22,6 @@ export const studentRule = {
       .notEmpty()
       .bail()
       .custom((items) => {
-        console.log(items);
         if (Array.isArray(items)) {
           for (let email of items) {
             if (!ValidationHandler.isValidEmailFormat(email)) return false;
