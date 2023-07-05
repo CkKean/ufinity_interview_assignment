@@ -2,6 +2,7 @@
 	"info": {
 		"_postman_id": "d32a4b50-d9a3-4296-b50f-df88e87edc00",
 		"name": "Ufinity",
+		"description": "APIs are available for the test assignment from Ufinity.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "9117478"
 	},
@@ -15,7 +16,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/commonstudents?teacher=teacherkang@gmail.com",
+							"raw": "http://localhost:3000/api/commonstudents",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -29,19 +30,30 @@
 								{
 									"key": "teacher",
 									"value": "teacherken@gmail.com",
+									"description": "Return [\"commonstudent1@gmail.com\", \"commonstudent2@gmail.com\", \"commonstudent5@gmail.com\"]",
 									"disabled": true
 								},
 								{
 									"key": "teacher",
-									"value": "teacherjoe@gmail.comd",
+									"value": "teacherjoe@gmail.com",
+									"description": "Return [\"commonstudent2@gmail.com\", \"commonstudent3@gmail.com\"]",
 									"disabled": true
 								},
 								{
 									"key": "teacher",
-									"value": "teacherkang@gmail.com"
+									"value": "teacherkang@gmail.com",
+									"description": "Return []",
+									"disabled": true
+								},
+								{
+									"key": "teacher",
+									"value": "teacherken",
+									"description": "Return \"Invalid teacher email format.\"",
+									"disabled": true
 								}
 							]
-						}
+						},
+						"description": "- Retrieve a list of students who are common to a given list of teachers."
 					},
 					"response": []
 				},
@@ -52,7 +64,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"teacher\": \"teacherkang@gmail.com\",\r\n    \"students\": [\r\n        \"studentjon5@gmail.com\",\r\n        \"studentjon3@gmail.com\",\r\n        \"studentjon4@gmail.com\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"teacher\": \"teacherkang@gmail.com\",\r\n    \"students\": [\r\n        \"studentjon1@gmail.com\",\r\n        \"studentjon2@gmail.com\",\r\n        \"studentjon3@gmail.com\"\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -70,7 +82,8 @@
 								"api",
 								"register"
 							]
-						}
+						},
+						"description": "- Register one or more students to a specified teacher. The API behaves differently based on the conditions below:\n    - a. If the student exists but is unassigned, they will be assigned to the specified teacher.\n    - b. If the student does not exist, a new student record will be created and assigned to the specified teacher.\n    - c. If the student exists and is already assigned, no action will be taken."
 					},
 					"response": []
 				},
@@ -81,7 +94,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"student\": \"commonstudent1@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"student\": \"commonstudent@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -99,7 +112,8 @@
 								"api",
 								"suspend"
 							]
-						}
+						},
+						"description": "Suspend a specified student by student email."
 					},
 					"response": []
 				},
@@ -110,7 +124,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"teacher\": \"teacherping@gmail.com\",\r\n    \"notification\": \"Hello students! teacherkang@gmail.com@teacherkang@gmail.com\"\r\n}",
+							"raw": "{ \r\n  \"teacher\": \"teacherken@gmail.com\",\r\n  \"notification\": \"Hello students! @studentagnes@gmail.com @studentmichee@gmail.com\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -128,11 +142,13 @@
 								"api",
 								"retrievefornotifications"
 							]
-						}
+						},
+						"description": "- Retrieve a list of students that can receive a given notification by specific teacher. The list of students retrieved should not contain any duplicates/repetitions.\n    \n\n**Example 1:**\n\n**Request Body:**\n\n``` json\n{ \n  \"teacher\": \"teacherken@gmail.com\",\n  \"notification\": \"Hello students!\"\n}\n\n```\n\n**Response Body:**\n\n``` json\n{\n    \"recipients\": [\n        \"commonstudent1@gmail.com\",\n        \"commonstudent2@gmail.com\"\n    ]\n}\n\n```\n\n**Example Reqeust 2:**\n\n**Request Body:**\n\n``` json\n{ \n  \"teacher\": \"teacherken@gmail.com\",\n  \"notification\": \"Hello students! @studentagnes@gmail.com @studentmiche@gmail.com\"\n}\n\n```\n\nResponse Body:\n\n``` json\n{\n    \"recipients\": [\n        \"studentagnes@gmail.com\",\n        \"studentmiche@gmail.com\",\n        \"commonstudent1@gmail.com\",\n        \"commonstudent2@gmail.com\"\n    ]\n}\n\n```"
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "The following APIs are available for the test assignment:"
 		},
 		{
 			"name": "teacher",
@@ -162,11 +178,13 @@
 								"api",
 								"teachers"
 							]
-						}
+						},
+						"description": "- Create a new teacher record."
 					},
 					"response": []
 				}
-			]
+			],
+			"description": "APIs available for teacher module."
 		},
 		{
 			"name": "/healthCheck",
@@ -185,7 +203,8 @@
 						"healthCheck",
 						""
 					]
-				}
+				},
+				"description": "- This endpoint is used to check if the system is running or not."
 			},
 			"response": []
 		}

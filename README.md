@@ -113,7 +113,7 @@ The test suites are located in the `ufinity_interview_assignment/src/test` direc
 ### Steps to Run the Tests
 
 1. Start Docker Desktop to run the MySQL database.
-2. Run `npm test` to run the tests. The test result will be displayed if there are no problems on init database container. [FAQ](#faq) if there are any issues.
+2. Run `npm test` to run the tests. The test result will be displayed if there are no problems on init database container. Please check [FAQ](#faq) if there are any issues.
 ```
 Test Suites: 1 passed, 1 total
 Tests:       31 passed, 31 total
@@ -211,7 +211,6 @@ The following APIs are available for the test assignment:
             "students": [
               "commonstudent1@gmail.com",
               "commonstudent2@gmail.com",
-              "commonstudent5@gmail.com",
             ]
           }
     - Example 2:
@@ -283,14 +282,18 @@ There are two environments in which the application operates: test and developme
   
     - Host: 127.0.0.1
     - Port: 33307
-    - Schema: teacher-administration-system-test
+    - Password: 'password'
+    - user: 'root'
+    - Schema: 'teacher-administration-system-test'
 
 ### Development Environment 
   - The development environment is used for local development and testing. It has its own MySQL database. The development database configuration can be customized in the .env file and add it into the /src directory. The default test database configuration is as follows:
 
     - Host: 127.0.0.1
     - Port: 33306
-    - Schema: teacher-administration-system
+    - Password: 'password'
+    - user: 'root'
+    - Schema: 'teacher-administration-system'
 
 ## Test Data
 
