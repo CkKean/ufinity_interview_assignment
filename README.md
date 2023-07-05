@@ -125,6 +125,8 @@ Note: It is better to run step 3 to clear the existing database to make consiste
 
 ## API Routes
 
+The Postman APIs json file is provided in the `ufinity_interview_assignment/api.postman_collection.json`.
+
 The following APIs are available for the test assignment:
 
 ### 1. **POST** `http://localhost:3000/api/register`
