@@ -10,9 +10,9 @@ import {
   PrimaryKey,
   Table,
   Unique,
-} from "sequelize-typescript";
-import { Teacher } from "./teacherModel";
-import { Student } from "./studentModel";
+} from 'sequelize-typescript';
+import { Teacher } from './teacherModel';
+import { Student } from './studentModel';
 
 export const TEACHER_STUDENT_RELATIONSHIP_STATUS = {
   INACTIVE: 0,
@@ -35,7 +35,7 @@ export interface TeacherStudentRelationshipCreateModel {
 }
 
 @Table({
-  tableName: "teacher_student_relationship",
+  tableName: 'teacher_student_relationship',
   timestamps: false,
 })
 export class TeacherStudentRelationship extends Model<TeacherStudentRelationship> {
@@ -51,7 +51,7 @@ export class TeacherStudentRelationship extends Model<TeacherStudentRelationship
   @Column(DataType.INTEGER)
   teacher_id: number;
 
-  @BelongsTo(() => Teacher, "teacher_id")
+  @BelongsTo(() => Teacher, 'teacher_id')
   teacher: Teacher;
 
   @ForeignKey(() => Student)
@@ -59,7 +59,7 @@ export class TeacherStudentRelationship extends Model<TeacherStudentRelationship
   @Column(DataType.INTEGER)
   student_id: number;
 
-  @BelongsTo(() => Student, "student_id")
+  @BelongsTo(() => Student, 'student_id')
   student: Student;
 
   @AllowNull(false)

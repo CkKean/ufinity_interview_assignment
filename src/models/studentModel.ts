@@ -1,19 +1,16 @@
 import {
   AllowNull,
   AutoIncrement,
-  BelongsTo,
   Column,
   DataType,
   Default,
-  ForeignKey,
   HasMany,
   Model,
   PrimaryKey,
   Table,
-  Unique,
-} from "sequelize-typescript";
-import { Teacher } from "./teacherModel";
-import { TeacherStudentRelationship } from "./teacherStudentRelationshipModel";
+  Unique
+} from 'sequelize-typescript';
+import { TeacherStudentRelationship } from './teacherStudentRelationshipModel';
 
 export const STUDENT_STATUS = {
   INACTIVE: 0,
@@ -45,7 +42,7 @@ export interface StudentCreateModel {
 }
 
 @Table({
-  tableName: "student",
+  tableName: 'student',
   timestamps: false,
 })
 export class Student extends Model<Student> {
@@ -79,6 +76,6 @@ export class Student extends Model<Student> {
   @Column(DataType.DATE)
   student_suspended_at: Date;
 
-  @HasMany(() => TeacherStudentRelationship, "student_id")
+  @HasMany(() => TeacherStudentRelationship, 'student_id')
   teacher_student_relationship: TeacherStudentRelationship[];
 }

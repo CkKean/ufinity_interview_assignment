@@ -16,7 +16,7 @@ const create: RequestHandler = async (req, res, next: NextFunction) => {
       throw result.error;
     }
 
-    return res.sendStatus(StatusCodes.OK);
+    res.sendStatus(StatusCodes.OK);
   } catch (error) {
     next(error);
   }

@@ -8,7 +8,7 @@ const MAX_RETRY = 20;
 const LOG = new Logger('server.ts');
 const { PORT = 3000 } = process.env;
 
-export const startApplication = async (retryCount: number) => {
+const startApplication = async (retryCount: number) => {
   try {
     await sequelize.authenticate();
     App.listen(PORT, () => {

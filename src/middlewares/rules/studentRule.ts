@@ -1,5 +1,5 @@
 import { check, query } from 'express-validator';
-import ValidationHandler from '../utils/validationHandler';
+import ValidationHandler from '../../utils/validationHandler';
 
 export const studentRule = {
   forRegister: [
@@ -23,7 +23,9 @@ export const studentRule = {
       .bail()
       .custom((items) => {
         if (Array.isArray(items)) {
-          const invalidEmail = items.some((email)=> !ValidationHandler.isValidEmailFormat(email))
+          const invalidEmail = items.some(
+            (email) => !ValidationHandler.isValidEmailFormat(email)
+          );
           return !invalidEmail;
         } else {
           return ValidationHandler.isValidEmailFormat(items);

@@ -1,11 +1,11 @@
-import moment from "moment-timezone";
+import moment from 'moment-timezone';
 
 class ValidationHandler {
   private static emailRegex =
     /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   static isNullOrUndefined(value: any): boolean {
-    return value === null || value === undefined || value.toString() === "";
+    return value === null || value === undefined || value.toString() === '';
   }
 
   static isValidNumber(value: any): boolean {
@@ -53,13 +53,13 @@ class ValidationHandler {
   }
 
   static isValidTime(value: string): boolean {
-    const validTime = moment(value, "HH:mm:ss").isValid();
+    const validTime = moment(value, 'HH:mm:ss').isValid();
     return validTime;
   }
 
   static isValidTimeDuration(startTime: string, endTime: string): boolean {
-    const validTimeDuration = moment(startTime, "HH:mm:ss").isBefore(
-      moment(endTime, "HH:mm:ss")
+    const validTimeDuration = moment(startTime, 'HH:mm:ss').isBefore(
+      moment(endTime, 'HH:mm:ss')
     );
     return validTimeDuration;
   }

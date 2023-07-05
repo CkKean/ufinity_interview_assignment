@@ -7,6 +7,8 @@ import {
   TeacherStudentRelationship,
   TeacherStudentRelationshipModel,
 } from '../models/teacherStudentRelationshipModel';
+import ErrorBase from '../errors/ErrorBase';
+import { StatusCodes } from 'http-status-codes';
 
 export class StudentService {
   register = async ({
@@ -102,17 +104,15 @@ export class StudentService {
       const student = await Student.findOne({
         where: {
           student_email: studentEmail,
-          student_status: {
-            [Op.ne]: STUDENT_STATUS.SUSPENDED,
-          },
         },
       });
 
       if (!student) {
-        return {
-          status: true,
-          message: 'Suspend student successfully',
-        };
+        throw new ErrorBase('Student does not exist.', StatusCodes.OK);
+      }
+
+      if (student.student_status === STUDENT_STATUS.SUSPENDED) {
+        throw new ErrorBase('Student was in suspended status.', StatusCodes.OK);
       }
 
       const currentDateTime = new Date();
@@ -138,7 +138,7 @@ export class StudentService {
 
       return {
         status: true,
-        message: 'Suspend student successfully',
+        message: 'Suspend student successfully.',
       };
     } catch (error) {
       await t.rollback();

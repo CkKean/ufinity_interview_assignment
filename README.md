@@ -1,130 +1,314 @@
-# ufinity_interview_assignment
+# Ufinity Interview Assignment
 
-This is the codebase for Ufinity interview test assignment.
-<br>
-<br>
+This is the codebase for the Ufinity interview test assignment.
 
 ## Prerequisites
 
 - NodeJS v18.x.x
 - Docker
 
-<br>
-
 ## Folder Structure
 
-| S/N | Name | Type | Description |
-| --- | ------------------------ | ---- | ------=----------------------------------------- |
-| 1 | database | dir | Consist the DDL query for the database |
-| 2 | src | dir | Consist the functions, models, routes for APIs
-| 3 | README.md | file | This file |
+| S/N | Name      | Type | Description                                                                                                               |
+| --- | --------- | ---- | ------------------------------------------------------------------------------------------------------------------------- |
+| 1   | database  | dir  | Contains the DDL query for the database                                                                                   |
+| 2   | src       | dir  | Contains the config, models, routes, controllers, services, utils, rules, test, errors, middleware, and const directories |
+| 3   | README.md | file | This file                                                                                                                 |
 
-## Exposed Port
+## Exposed Ports
 
-| S/N | Application | Exposed Port |
-| --- | ----------- | ------------ |
-| 1   | database    | 33306        |
-| 2   | application | 3000         |
-
-<br>
+| S/N | Application                         | Exposed Port |
+| --- | ----------------------------------- | ------------ |
+| 1   | database (Development Environment)  | 33306        |
+| 1   | database (Test Environment)         | 33306        |
+| 2   | application                         | 3000         |
 
 ## Commands
 
-All the commands listed should be ran in ./ufinity_interview_assignment directory.
+All the commands listed below should be run in the `./ufinity_interview_assignment` directory.
 
-### Installing dependencies
+### Installing Dependencies
 
 ```bash
 npm install
 ```
 
-<br>
+### Starting the Project
 
-### Starting Project
-
-Starting the project in local environment.
-This will start all the dependencies services i.e. database.
+Start the project in the local environment, which also starts the necessary dependencies such as the database.
 
 ```bash
 npm start
 ```
 
-<br>
+### Running in Watch Mode
 
-### Running in watch mode
-
-This will start the application in watch mode.
+Start the application in watch mode.
 
 ```bash
 npm run start:dev
 ```
 
-<br>
+### Execute ESLint
 
-### Check local application is started
+To execute ESLint and check your code for any potential issues or errors.
 
-You should be able to call (GET) the following endpoint and get a 200 response
+```bash
+npm run lint
+```
+
+### Execute prettier
+
+To execute Prettier and format your code according to the specified rules.
+
+```bash
+npm run prettier
+```
+
+## Steps to Run a Local Instance
+
+1. Clone the project repository from this URL: https://github.com/CkKean/ufinity_interview_assignment.git
+2. Open the codebase in your preferred IDE (e.g., VS Code)
+3. Start Docker Desktop to run the MySQL database
+4. Run `npm install` to install the project dependencies
+5. Run `npm start` to start the project. The application is ready for use if display following message. Please check FAQ if there are any issues.
+
+```
+ ✔ Container teacher-administration-system-mysql  Running                                                                                                                                                                                                         0.0s 
+
+> teacher-administration-system@1.0.0 start
+> ts-node ./src/server.ts
+
+2023-07-05 15:50:40     [database.ts]   INFO    Executing (default): SELECT 1+1 AS result
+2023-07-05 15:50:40     [server.ts]     INFO    Application started at http://localhost:3000
+```
+
+6. You should be able to send a GET request to the following endpoint and receive a 200 response:
 
 ```
 http://localhost:3000/api/healthCheck/
 ```
 
-<br>
+## Testing
 
-## Steps to run local instance
+The test suites are located in the `ufinity_interview_assignment/src/test` directory. There is one test suite with 31 test cases for the Student APIs. A default set of dummy data will be created before executing the test script. The data will remain the for every test run for consistency. Please check FAQ if has any problem on executions.
 
-1. Clone the project from repository. url: https://github.com/CkKean/ufinity_interview_assignment.git
-2. Open the codebase in IDE (e.g.: vscode)
-3. Open docker desktop for running the MySQL database
-4. Run `npm run install` to install the dependencies
-5. Run `npm run start` to start the project
+### Steps to Run the Tests
 
-<br>
+1. Start Docker Desktop to run the MySQL database.
+2. Run `npm test` to run the tests. The test result will be display if there are no problems on init database container. Please check FAQ if there are any issues.
+```
+Test Suites: 1 passed, 1 total
+Tests:       31 passed, 31 total
+Snapshots:   0 total
+Time:        8.037 s, estimated 31 s
+```
+3. Run `npm run test:clear` to remove the existing test database.
 
-## Test
+Note: It is better to run step 3 to clear the existing database to make a consistent data .
 
-The test suites is located in folder ufinity_interview_assignment/src/test. There are only one test suite and 29 test cases for Student APIs. The default dummy data will be created during the first MySQL docker container initialised.
+## API Routes
 
-## Steps to run test
+The following APIs are available for the test assignment:
 
-1. Open docker desktop for running the MySQL database.
-2. Run `npm run prestart` to start and init the MySQL database in docker.
-3. Run `npm run test` to conducted the test.
+### API Endpoint: **POST** `http://localhost:3000/api/register`
 
-### Database
+- Register one or more students to a specified teacher. The API behaves differently based on the conditions below:
+     a. If the student exists but is unassigned, they will be assigned to the specified teacher.
+     b. If the student does not exist, a new student record will be created and assigned to the specified teacher.
+     c. If the student exists and is already assigned, no action will be taken.
 
-It will be ran the first time MySQL docker container is first initialised. <br><br>
+    ##### Request
+    - Method: POST
+    - URL: /api/retrievefornotifications
+    - Headers:
+      - Content-Type: application/json
+    - Request Body:
+      ```json
+      {
+        "teacher": "teacherken@gmail.com",
+        "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
+      }
+    - Response:
+        Status: 204 No Content
 
-There are three tables in the database. The dummy default data will be created during the first MySQL docker container initialised.
+### API Endpoint: **GET** `http://localhost:3000/api/commonstudents?teacher=teacherken@gmail.com`
 
-1. student
-- To store the information of student
+- Retrieve a list of students who are common to a given list of teachers.
 
-2. teacher
-- To store the information of teacher
+    ##### Request
+    - Method: GET
+    - URL: /api/commonstudents
+    - Request example: `/api/commonstudents?teacher=teacherken@gmail.com`
+    - Headers:
+      - Content-Type: application/json
+    - Response:
+        Status: 200 OK
+        Body:
+        ```json
+        {
+          "students": [
+            "commonstudent2@gmail.com",
+            "commonstudent3@gmail.com",
+            "commonstudent1@gmail.com",
+            "commonstudent5@gmail.com"
+          ]
+        }
 
-3. teacher_student_relationship
-- To store the relationship between student and teacher.
+### API Endpoint: **POST** `http://localhost:3000/api/suspend`
 
-<br>
+- Suspend a specified student.
 
-### API
+    ##### Request  
+    - Method: POST
+    - URL: /api/suspend
+    - Headers:
+      - Content-Type: application/json
+    - Request Body:
+      ```json
+      {
+        "student": "commonstudent4@gmail.com"
+      }
+    - Response:
+        Status: 204 No Content
 
-1. http://localhost:3000/api/register
 
-- Register one or more students to a specified teacher.
+### API Endpoint: **POST** `http://localhost:3000/api/retrievefornotifications`
 
-2. http://localhost:3000/api/commonstudents?teacher=teacherken@gmail.com
+- Retrieve a list of students that can receive a given notification by specific teacher. The list of students retrieved should not contain any duplicates/repetitions.
 
-- Retrieve a list of students common to a given list of teachers.
+    ##### Request
+    - Method: POST
+    - URL: /api/retrievefornotifications
+    - Headers:
+      - Content-Type: application/json
 
-3. http://localhost:3000/api/suspend
+    - Example 1:
+      - Request Body:
+        ```json
+        {
+          "teacher": "teacherken@gmail.com",
+          "notification": "Hello students!"
+        }
+      - Response:
+          Status: 200 OK
+          Body:
+          ```json
+          {
+            "students": [
+              "commonstudent1@gmail.com",
+              "commonstudent2@gmail.com",
+              "commonstudent5@gmail.com",
+            ]
+          }
 
-- Suspend a specified student
+    - Example 1:
+      - Request Body:
+        ```json
+        {
+          "teacher": "teacherken@gmail.com",
+          "notification": "Hello students! ! @studentagnes@gmail.com @studentmiche@gmail.com"
+        }
 
-4. http://localhost:3000/api/retrievefornotifications
+      - Response 2:
+          Status: 200 OK
+          Body:
+          ```json
+          {
+            "students": [
+              "commonstudent1@gmail.com",
+              "commonstudent2@gmail.com",
+              "commonstudent5@gmail.com",
+              "studentagnes@gmail.com", 
+              "studentmiche@gmail.com",
+            ]
+          }
 
-- Retrieve a list of students who can receive a given notification
+### API Endpoint: **POST** `http://localhost:3000/api/teachers`
+
+- Create a new teacher record.
+
+    #### Request  
+      - Method: POST
+      - URL: /api/teacher
+      - Headers:
+        - Content-Type: application/json
+      - Request Body:
+        ```json
+        {
+          "teacher_email": "teacherck@gmail.com"
+        }
+      - Response:
+          Status: 200 OK
+
+### API Endpoint: **GET** `http://localhost:3000/api/healthCheck/`
+
+- This endpoint is used to check if the system is running or not.
+
+    ##### Request  
+      - Method: GET
+      - URL: /api/healthCheck
+      - Headers:
+        - Content-Type: application/json
+      - Request Body:
+      - Response:
+          Status: 200 OK
+          Body: OK
+
+## Database
+The application uses a MySQL database to store data. The database schema is automatically created when the MySQL Docker container is initialized for the first time.
+
+The database has three tables as ERD shown:
+
+1. student: Stores student information
+2. teacher: Stores teacher information
+3. teacher_student_relationship: Stores the relationship between students and teachers
+
+#ERD
+![Database Image](ufinityInterviewERD.drawio.svg)
+
+## Environments
+There are two environments in which the application operates: test and development.
+
+### Test Environment
+  - The test environment is used for running automated tests. It has a separate MySQL database for testing purposes. The test database configuration can be customized in the .env file and add it into the /src directory. The default test database configuration is as follows:
+  
+    - Host: 127.0.0.1
+    - Port: 33307
+    - Schema: teacher-administration-system-test
+
+### Development Environment 
+  - The development environment is used for local development and testing. It has its own MySQL database. The development database configuration can be customized in the .env file and add it into the /src directory. The default test database configuration is as follows:
+
+    - Host: 127.0.0.1
+    - Port: 33306
+    - Schema: teacher-administration-system
+
+## Test Data
+
+The following is the default sample data used for Student APIs:
+
+- Students:
+  - commonstudent1@gmail.com
+  - commonstudent2@gmail.com
+  - commonstudent3@gmail.com
+  - commonstudent4@gmail.com
+  - commonstudent5@gmail.com (Suspended)
+
+- Teachers:
+  - teacherken@gmail.com
+  - teacherjoe@gmail.com
+  - teacherkang@gmail.com
+  - teacherping@gmail.com
+
+- Teacher-Student Relationships:
+  - teacherken@gmail.com - commonstudent1@gmail.com
+  - teacherken@gmail.com - commonstudent2@gmail.com
+  - teacherken@gmail.com - commonstudent5@gmail.com
+  - teacherjoe@gmail.com - commonstudent2@gmail.com
+  - teacherjoe@gmail.com - commonstudent3@gmail.com
+
+Note: The student with email "commonstudent5@gmail.com" is suspended and will not receive notifications.
 
 <br>
 
@@ -136,6 +320,19 @@ If you encounter the following error when running `npm start`, it is due to the 
 Please run `npm start` again.
 
 ```
-[server.js]	ERROR	SequelizeConnectionError: Connection lost: The server closed the connection.
-[server.js]	ERROR	Unable to start application
+
+[server.js] ERROR SequelizeConnectionError: Connection lost: The server closed the connection.
+[server.js] ERROR Unable to start application
+
+```
+
+### Error when conducted testing
+
+If you encounter the following error when running `npm test`, it is due to the slow startup of your database container.<br>
+Please run `npm test` again. It might display partial test cases passed result if the following error occurs.
+
+```
+[server.js] ERROR SequelizeConnectionError: Connection lost: The server closed the connection.
+[server.js] ERROR Unable to start application
+
 ```

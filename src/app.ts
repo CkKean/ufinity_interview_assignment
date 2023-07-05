@@ -10,7 +10,7 @@ App.use(compression());
 App.use(cors());
 App.use(Express.json());
 App.use(Express.urlencoded({ extended: true }));
-App.use('/api',  router);
+App.use('/api', router);
 App.use(globalErrorHandler);
 
 export default App;

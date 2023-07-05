@@ -12,7 +12,7 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "quotes": ["error", "single"],
-    "semi": ["error", "none"],
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    "semi": ["error", "always"],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
   }
 }

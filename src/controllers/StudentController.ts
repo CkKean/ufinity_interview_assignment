@@ -29,7 +29,7 @@ const register: RequestHandler = async (req, res, next: NextFunction) => {
       throw registerStudent.error;
     }
 
-    return res.sendStatus(StatusCodes.NO_CONTENT);
+    res.sendStatus(StatusCodes.NO_CONTENT);
   } catch (error) {
     console.log(error);
     next(error);
@@ -50,7 +50,7 @@ const getCommonStudents: RequestHandler = async (
       throw students.error;
     }
 
-    return res.json({
+    res.json({
       students: students.data,
     });
   } catch (error) {
@@ -69,7 +69,7 @@ const suspend: RequestHandler = async (req, res, next: NextFunction) => {
       throw result.error;
     }
 
-    return res.sendStatus(StatusCodes.NO_CONTENT);
+    res.sendStatus(StatusCodes.NO_CONTENT);
   } catch (error) {
     next(error);
   }
@@ -91,8 +91,11 @@ const getNotificationList: RequestHandler = async (
     }
 
     const studentEmails =
-      notification.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) ||
-      [];
+      [
+        ...new Set(
+          notification.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g)
+        ),
+      ] || [];
 
     const result = await studentService.getStudentNotificationList(
       teacherData.data.teacher_id,
@@ -103,7 +106,7 @@ const getNotificationList: RequestHandler = async (
       throw result.error;
     }
 
-    return res.json({
+    res.json({
       recipients: result.data,
     });
   } catch (error) {
