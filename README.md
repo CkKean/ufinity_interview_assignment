@@ -88,7 +88,7 @@ npm run prettier
 2. Open the codebase in your preferred IDE (e.g., VS Code)
 3. Start Docker Desktop to run the MySQL database
 4. Run `npm install` to install the project dependencies
-5. Run `npm start` to start the project. The application is ready for use if display following message. Please check FAQ if there are any issues.
+5. Run `npm start` to start the project. The application is ready for use if displays the following message. Please check [FAQ](#faq) if there are any issues.
 
 ```
  ✔ Container teacher-administration-system-mysql  Running                                                                                                                                                                                                         0.0s 
@@ -108,12 +108,12 @@ http://localhost:3000/api/healthCheck/
 
 ## Testing
 
-The test suites are located in the `ufinity_interview_assignment/src/test` directory. There is one test suite with 31 test cases for the Student APIs. A default set of dummy data will be created before executing the test script. The data will remain for every test run for consistency. Please check FAQ if has any issues on executions.
+The test suites are located in the `ufinity_interview_assignment/src/test` directory. There is one test suite with 31 test cases for the Student APIs. A default set of dummy data will be created before executing the test script. The data will remain for every test run for consistency. Please check [FAQ](#faq) if has any issues with executions.
 
 ### Steps to Run the Tests
 
 1. Start Docker Desktop to run the MySQL database.
-2. Run `npm test` to run the tests. The test result will be displayed if there are no problems on init database container. Please check FAQ if there are any issues.
+2. Run `npm test` to run the tests. The test result will be displayed if there are no problems on init database container. [FAQ](#faq) if there are any issues.
 ```
 Test Suites: 1 passed, 1 total
 Tests:       31 passed, 31 total
@@ -320,7 +320,7 @@ Note: The student with email "commonstudent5@gmail.com" is suspended and will no
 
 <br>
 
-## FAQ
+## <a name="faq">FAQ</a>
 
 ### Error when starting up
 
