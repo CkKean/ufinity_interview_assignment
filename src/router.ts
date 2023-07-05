@@ -1,11 +1,12 @@
 import Express from 'express';
-import HealthcheckController from './controllers/HealthcheckController';
+import healthcheckRoute from './routes/healthcheckRoute';
+import studentRoute from './routes/studentRoute';
+import teacherRoute from './routes/teacherRoute';
 
 const router = Express.Router();
 
-router.use('/', HealthcheckController);
-router.use('/teachers', HealthcheckController)
-router.use('/students', HealthcheckController)
-router.use('/notifications', HealthcheckController)
+router.use('/', studentRoute);
+router.use('/healthCheck', healthcheckRoute);
+router.use('/teachers', teacherRoute);
 
 export default router;

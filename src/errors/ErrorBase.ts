@@ -2,7 +2,7 @@ class ErrorBase extends Error {
   private errorCode: number;
   private httpStatusCode: number;
 
-  constructor(message: string, errorCode: number, httpStatusCode: number) {
+  constructor(message: string, httpStatusCode: number, errorCode?: number) {
     super(message);
 
     this.errorCode = errorCode;

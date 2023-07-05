@@ -1,7 +1,8 @@
 import 'dotenv/config';
+import App from './app';
 import sequelize from './config/database';
 import Logger from './config/logger';
-import App from './app';
+import { ModelInit } from './config/modelInit';
 
 const MAX_RETRY = 20;
 const LOG = new Logger('server.ts');
@@ -14,6 +15,7 @@ const startApplication = async (retryCount: number) => {
       LOG.info(`Application started at http://localhost:${PORT}`);
     });
 
+    ModelInit(sequelize); // Init Model
   } catch (e) {
     LOG.error(e);
 
