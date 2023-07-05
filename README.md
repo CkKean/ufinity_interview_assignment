@@ -1,6 +1,7 @@
-# Ufinity Interview Assignment
+# Interview Assignment
 
-This is the codebase for the Ufinity interview test assignment.
+This is the codebase for the Ufinity interview test assignment. 
+The system provides the features to Teachers to perform administrative functions for their students
 
 ## Prerequisites
 
