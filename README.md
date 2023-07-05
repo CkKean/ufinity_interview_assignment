@@ -49,6 +49,22 @@ Start the application in watch mode.
 npm run start:dev
 ```
 
+### Execute Automated Tests
+
+To execute the automated tests.
+
+```bash
+npm test
+```
+
+### Clear Test Database
+
+To remove the existing test database container service.
+
+```bash
+npm run test:clear
+```
+
 ### Execute ESLint
 
 To execute ESLint and check your code for any potential issues or errors.
@@ -91,12 +107,12 @@ http://localhost:3000/api/healthCheck/
 
 ## Testing
 
-The test suites are located in the `ufinity_interview_assignment/src/test` directory. There is one test suite with 31 test cases for the Student APIs. A default set of dummy data will be created before executing the test script. The data will remain the for every test run for consistency. Please check FAQ if has any problem on executions.
+The test suites are located in the `ufinity_interview_assignment/src/test` directory. There is one test suite with 31 test cases for the Student APIs. A default set of dummy data will be created before executing the test script. The data will remain for every test run for consistency. Please check FAQ if has any issues on executions.
 
 ### Steps to Run the Tests
 
 1. Start Docker Desktop to run the MySQL database.
-2. Run `npm test` to run the tests. The test result will be display if there are no problems on init database container. Please check FAQ if there are any issues.
+2. Run `npm test` to run the tests. The test result will be displayed if there are no problems on init database container. Please check FAQ if there are any issues.
 ```
 Test Suites: 1 passed, 1 total
 Tests:       31 passed, 31 total
@@ -104,21 +120,19 @@ Snapshots:   0 total
 Time:        8.037 s, estimated 31 s
 ```
 3. Run `npm run test:clear` to remove the existing test database.
-
-Note: It is better to run step 3 to clear the existing database to make a consistent data .
+Note: It is better to run step 3 to clear the existing database to make consistent data.
 
 ## API Routes
 
 The following APIs are available for the test assignment:
 
-### API Endpoint: **POST** `http://localhost:3000/api/register`
+### 1. **POST** `http://localhost:3000/api/register`
 
 - Register one or more students to a specified teacher. The API behaves differently based on the conditions below:
-     a. If the student exists but is unassigned, they will be assigned to the specified teacher.
-     b. If the student does not exist, a new student record will be created and assigned to the specified teacher.
-     c. If the student exists and is already assigned, no action will be taken.
-
-    ##### Request
+     - a. If the student exists but is unassigned, they will be assigned to the specified teacher.
+     - b. If the student does not exist, a new student record will be created and assigned to the specified teacher.
+     - c. If the student exists and is already assigned, no action will be taken.
+ - Request:
     - Method: POST
     - URL: /api/retrievefornotifications
     - Headers:
@@ -129,23 +143,22 @@ The following APIs are available for the test assignment:
         "teacher": "teacherken@gmail.com",
         "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
       }
-    - Response:
-        Status: 204 No Content
+- Response:
+   - Status: 204 No Content
 
-### API Endpoint: **GET** `http://localhost:3000/api/commonstudents?teacher=teacherken@gmail.com`
+### 2. **GET** `http://localhost:3000/api/commonstudents?teacher=teacherken@gmail.com`
 
 - Retrieve a list of students who are common to a given list of teachers.
-
-    ##### Request
-    - Method: GET
-    - URL: /api/commonstudents
-    - Request example: `/api/commonstudents?teacher=teacherken@gmail.com`
-    - Headers:
-      - Content-Type: application/json
-    - Response:
-        Status: 200 OK
-        Body:
-        ```json
+- Request:
+   - Method: GET
+   - URL: /api/commonstudents
+   - Request example: `/api/commonstudents?teacher=teacherken@gmail.com`
+   - Headers:
+     - Content-Type: application/json
+- Response:
+   - Status: 200 OK
+   - Response Body:
+      ```json
         {
           "students": [
             "commonstudent2@gmail.com",
@@ -155,11 +168,10 @@ The following APIs are available for the test assignment:
           ]
         }
 
-### API Endpoint: **POST** `http://localhost:3000/api/suspend`
+### 3. **POST** `http://localhost:3000/api/suspend`
 
 - Suspend a specified student.
-
-    ##### Request  
+- Request: 
     - Method: POST
     - URL: /api/suspend
     - Headers:
@@ -169,20 +181,18 @@ The following APIs are available for the test assignment:
       {
         "student": "commonstudent4@gmail.com"
       }
-    - Response:
-        Status: 204 No Content
+- Response:
+  - Status: 204 No Content
 
 
-### API Endpoint: **POST** `http://localhost:3000/api/retrievefornotifications`
+### 4. **POST** `http://localhost:3000/api/retrievefornotifications`
 
 - Retrieve a list of students that can receive a given notification by specific teacher. The list of students retrieved should not contain any duplicates/repetitions.
-
-    ##### Request
+- Request:
     - Method: POST
     - URL: /api/retrievefornotifications
     - Headers:
       - Content-Type: application/json
-
     - Example 1:
       - Request Body:
         ```json
@@ -201,16 +211,14 @@ The following APIs are available for the test assignment:
               "commonstudent5@gmail.com",
             ]
           }
-
-    - Example 1:
+    - Example 2:
       - Request Body:
         ```json
         {
           "teacher": "teacherken@gmail.com",
-          "notification": "Hello students! ! @studentagnes@gmail.com @studentmiche@gmail.com"
+          "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
         }
-
-      - Response 2:
+      - Response:
           Status: 200 OK
           Body:
           ```json
@@ -224,47 +232,44 @@ The following APIs are available for the test assignment:
             ]
           }
 
-### API Endpoint: **POST** `http://localhost:3000/api/teachers`
+### 5. **POST** `http://localhost:3000/api/teachers`
 
 - Create a new teacher record.
-
-    #### Request  
-      - Method: POST
-      - URL: /api/teacher
-      - Headers:
-        - Content-Type: application/json
-      - Request Body:
+- Request  
+   - Method: POST
+   - URL: /api/teachers
+   - Headers:
+     - Content-Type: application/json
+   - Request Body:
         ```json
         {
           "teacher_email": "teacherck@gmail.com"
         }
-      - Response:
-          Status: 200 OK
+- Response:
+  - Status: 200 OK
 
-### API Endpoint: **GET** `http://localhost:3000/api/healthCheck/`
+### 6. **GET** `http://localhost:3000/api/healthCheck/`
 
 - This endpoint is used to check if the system is running or not.
-
-    ##### Request  
-      - Method: GET
-      - URL: /api/healthCheck
-      - Headers:
-        - Content-Type: application/json
-      - Request Body:
-      - Response:
-          Status: 200 OK
-          Body: OK
+- Request  
+  - Method: GET
+  - URL: /api/healthCheck
+  - Headers:
+    - Content-Type: application/json
+- Response:
+  - Status: 200 OK
+  - Response Body: OK
 
 ## Database
 The application uses a MySQL database to store data. The database schema is automatically created when the MySQL Docker container is initialized for the first time.
 
-The database has three tables as ERD shown:
+The database has three tables as ERD shows:
 
 1. student: Stores student information
 2. teacher: Stores teacher information
 3. teacher_student_relationship: Stores the relationship between students and teachers
 
-#ERD
+### ERD
 ![Database Image](ufinityInterviewERD.drawio.svg)
 
 ## Environments
