@@ -1,14 +1,16 @@
+import { StatusCodes } from 'http-status-codes';
 import { Op, Sequelize } from 'sequelize';
 import sequelize from '../config/database';
-import { STUDENT_STATUS, Student } from '../models/studentModel';
-import { TEACHER_STATUS, Teacher } from '../models/teacherModel';
+import { STUDENT_STATUS } from '../const/studentStatus';
+import { TEACHER_STATUS } from '../const/teacherStatus';
+import { TEACHER_STUDENT_RELATIONSHIP_STATUS } from '../const/teacherStudentRelationshipStatus';
+import ErrorBase from '../errors/ErrorBase';
+import { Student } from '../models/studentModel';
+import { Teacher } from '../models/teacherModel';
 import {
-  TEACHER_STUDENT_RELATIONSHIP_STATUS,
   TeacherStudentRelationship,
   TeacherStudentRelationshipModel,
 } from '../models/teacherStudentRelationshipModel';
-import ErrorBase from '../errors/ErrorBase';
-import { StatusCodes } from 'http-status-codes';
 
 export class StudentService {
   register = async ({

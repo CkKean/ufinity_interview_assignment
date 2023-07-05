@@ -1,15 +1,21 @@
 import Express from 'express';
-import { TeacherController } from '../controllers/teacherController';
 import { teacherRule } from '../middlewares/rules/teacherRule';
 import errorHandler from '../middlewares/ruleErrorHandler';
+import { TeacherController } from '../controllers/TeacherController';
 
-const teacherRoute = Express.Router();
+class TeacherRoute {
+  teacherRoute = Express.Router();
+  
+  private teacherController = new TeacherController();
 
-teacherRoute.post(
-  '/',
-  teacherRule.forCreate,
-  errorHandler,
-  TeacherController.create
-);
+  constructor() {
+    this.teacherRoute.post(
+      '/',
+      teacherRule.forCreate,
+      errorHandler,
+      this.teacherController.create
+    );
+  }
+}
 
-export default teacherRoute;
+export default new TeacherRoute();

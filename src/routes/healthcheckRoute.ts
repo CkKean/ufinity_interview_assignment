@@ -1,8 +1,17 @@
 import Express from 'express';
-import { HealthcheckController } from '../controllers/healthcheckController';
+import { HealthcheckController } from '../controllers/HealthcheckController';
 
-const healthcheckRoute = Express.Router();
+class HealthCheckRoute {
+  healthcheckRoute = Express.Router();
+  
+  private healthcheckController = new HealthcheckController();
 
-healthcheckRoute.get('/', HealthcheckController.healthcheckHandler);
+  constructor() {
+    this.healthcheckRoute.get(
+      '/',
+      this.healthcheckController.healthcheckHandler
+    );
+  }
+}
 
-export default healthcheckRoute;
+export default new HealthCheckRoute();

@@ -14,11 +14,6 @@ import {
 import { Teacher } from './teacherModel';
 import { Student } from './studentModel';
 
-export const TEACHER_STUDENT_RELATIONSHIP_STATUS = {
-  INACTIVE: 0,
-  ACTIVE: 1,
-};
-
 export interface TeacherStudentRelationshipModel {
   teacher_student_relationship_id: number;
   teacher_id: number;

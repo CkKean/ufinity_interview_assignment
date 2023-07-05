@@ -12,10 +12,6 @@ import {
 } from 'sequelize-typescript';
 import { TeacherStudentRelationship } from './teacherStudentRelationshipModel';
 
-export const TEACHER_STATUS = {
-  INACTIVE: 0,
-  ACTIVE: 1,
-};
 
 export interface TeacherCreateModel {
   teacher_email: string;

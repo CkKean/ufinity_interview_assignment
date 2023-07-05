@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import ErrorCodes from '../const/ErrorCodes';
+import ErrorCodes from '../const/errorCodes';
 import ErrorBase from '../errors/ErrorBase';
 import { ErrorRequestHandler } from 'express';
 

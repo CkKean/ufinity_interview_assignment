@@ -4,24 +4,22 @@ import { StatusCodes } from 'http-status-codes';
 import { TeacherCreateModel } from '../models/teacherModel';
 import { TeacherService } from '../services/teacherService';
 
-const teacherService = new TeacherService();
+export class TeacherController {
+  teacherService = new TeacherService();
 
-const create: RequestHandler = async (req, res, next: NextFunction) => {
-  try {
-    const { teacher_email } = matchedData(req) as TeacherCreateModel;
+  create: RequestHandler = async (req, res, next: NextFunction) => {
+    try {
+      const { teacher_email } = matchedData(req) as TeacherCreateModel;
 
-    const result = await teacherService.create({ teacher_email });
+      const result = await this.teacherService.create({ teacher_email });
 
-    if (!result.status) {
-      throw result.error;
+      if (!result.status) {
+        throw result.error;
+      }
+
+      res.sendStatus(StatusCodes.OK);
+    } catch (error) {
+      next(error);
     }
-
-    res.sendStatus(StatusCodes.OK);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const TeacherController = {
-  create,
-};
+  };
+}
