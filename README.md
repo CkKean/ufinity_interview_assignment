@@ -21,7 +21,7 @@ The system provides the features to Teachers to perform administrative functions
 | S/N | Application                         | Exposed Port |
 | --- | ----------------------------------- | ------------ |
 | 1   | database (Development Environment)  | 33306        |
-| 1   | database (Test Environment)         | 33306        |
+| 1   | database (Test Environment)         | 33307        |
 | 2   | application                         | 3000         |
 
 ## Commands
