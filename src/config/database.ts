@@ -37,8 +37,9 @@ const dbConfig: Record<string, DatabaseConfiguration> = {
   },
   test: {
     ...defaultConfig,
-    DB_PORT: process.env.DB_PORT_TEST || "33307",
-    DB_SCHEMA: process.env.DB_SCHEMA_TEST || 'teacher-administration-system-test',
+    DB_PORT: process.env.DB_PORT_TEST || '33307',
+    DB_SCHEMA:
+      process.env.DB_SCHEMA_TEST || 'teacher-administration-system-test',
   },
 };
 
