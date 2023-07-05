@@ -6,9 +6,15 @@ import ValidationHandler from '../utils/validationHandler';
 export class TeacherService {
   create = async ({ teacher_email }: TeacherCreateModel) => {
     try {
-      await Teacher.create({
-        teacher_email: teacher_email,
+      const [teacher, created] = await Teacher.findOrCreate({
+        where: {
+          teacher_email: teacher_email,
+        },
       });
+
+      if (!created) {
+        throw new ErrorBase('Teacher is existed.', StatusCodes.OK);
+      }
 
       return {
         status: true,

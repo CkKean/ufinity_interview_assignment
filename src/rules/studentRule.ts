@@ -23,10 +23,8 @@ export const studentRule = {
       .bail()
       .custom((items) => {
         if (Array.isArray(items)) {
-          for (const email of items) {
-            if (!ValidationHandler.isValidEmailFormat(email)) return false;
-          }
-          return true;
+          const invalidEmail = items.some((email)=> !ValidationHandler.isValidEmailFormat(email))
+          return !invalidEmail;
         } else {
           return ValidationHandler.isValidEmailFormat(items);
         }

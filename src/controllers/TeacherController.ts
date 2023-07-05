@@ -1,8 +1,8 @@
-import { NextFunction, RequestHandler } from "express";
-import { matchedData } from "express-validator";
-import { StatusCodes } from "http-status-codes";
-import { TeacherCreateModel } from "../models/teacherModel";
-import { TeacherService } from "../services/teacherService";
+import { NextFunction, RequestHandler } from 'express';
+import { matchedData } from 'express-validator';
+import { StatusCodes } from 'http-status-codes';
+import { TeacherCreateModel } from '../models/teacherModel';
+import { TeacherService } from '../services/teacherService';
 
 const teacherService = new TeacherService();
 

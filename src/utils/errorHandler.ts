@@ -6,7 +6,6 @@ const errorHandler = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req).array()[0];
   if (errors) {
     return res.status(StatusCodes.BAD_REQUEST).json({
-      status: false,
       message: errors.msg,
     });
   }

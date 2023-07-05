@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: teacher-administration-system-mysql-test
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: teacher-administration-system-test
+    ports:
+      - "33307:3306"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d/DDLTEST.sql:ro
+    restart: always

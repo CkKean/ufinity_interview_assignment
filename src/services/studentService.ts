@@ -73,11 +73,18 @@ export class StudentService {
         ],
         attributes: [[Sequelize.col('student.student_email'), 'student_email']],
         group: ['student.student_email'],
+        raw: true,
       });
+
+      const data: string[] = students.map(
+        (
+          student: TeacherStudentRelationshipModel & { student_email?: string }
+        ) => student.student_email
+      );
 
       return {
         status: true,
-        data: students,
+        data: data,
         message: 'Retrieve common student successfully.',
       };
     } catch (error) {
