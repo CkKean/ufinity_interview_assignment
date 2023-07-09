@@ -1,4 +1,4 @@
-import { NextFunction, RequestHandler } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { matchedData } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import {
@@ -12,7 +12,11 @@ export class StudentController {
   private teacherService = new TeacherService();
   private studentService = new StudentService();
 
-  register: RequestHandler = async (req, res, next: NextFunction) => {
+  register: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const { students, teacher } = matchedData(req) as StudentRegisterRequest;
 
@@ -47,7 +51,7 @@ export class StudentController {
         throw students.error;
       }
 
-      res.json({
+      res.status(StatusCodes.OK).json({
         students: students.data,
       });
     } catch (error) {
@@ -105,7 +109,7 @@ export class StudentController {
         throw result.error;
       }
 
-      res.json({
+      res.status(StatusCodes.OK).json({
         recipients: result.data,
       });
     } catch (error) {

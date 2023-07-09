@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "This is a system which Teachers can perform administrative functions for their students",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest",
-    "pretest": "docker-compose -f docker-compose-test.yml up -d",
+    "test": "cross-env NODE_ENV=test jest ./src/test/studentService.test.ts",
     "test:clear": "docker-compose -f docker-compose-test.yml rm -f -s -v db-test",
     "clear": "docker-compose -f down --remove-orphans",
     "build:ts": "tsc",
@@ -49,6 +48,7 @@
     "nodemon": "^2.0.4",
     "prettier": "^2.8.8",
     "reflect-metadata": "^0.1.13",
+    "sequelize-mock": "^0.10.2",
     "supertest": "^6.3.3",
     "ts-jest": "^26.3.0",
     "ts-node": "^9.1.1",

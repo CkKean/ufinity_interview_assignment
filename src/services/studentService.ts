@@ -178,7 +178,7 @@ export class StudentService {
         attributes: [[Sequelize.col('student.student_email'), 'student_email']],
         raw: true,
       });
-
+      
       const data = [
         ...studentEmails,
         ...registeredStudents.map(

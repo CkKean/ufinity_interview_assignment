@@ -1,7 +1,7 @@
 import Express from 'express';
 import { studentRule } from '../middlewares/rules/studentRule';
 import errorHandler from '../middlewares/ruleErrorHandler';
-import { StudentController } from '../controllers/StudentController';
+import { StudentController } from '../controllers/studentController';
 
 class StudentRoute {
   studentRoute = Express.Router();

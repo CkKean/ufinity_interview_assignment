@@ -1,5 +1,5 @@
 import Express from 'express';
-import { HealthcheckController } from '../controllers/HealthcheckController';
+import { HealthcheckController } from '../controllers/healthcheckController';
 
 class HealthCheckRoute {
   healthcheckRoute = Express.Router();
