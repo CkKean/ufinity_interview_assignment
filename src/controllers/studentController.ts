@@ -1,12 +1,12 @@
+import Logger from '../config/logger';
+import { StudentNotificationRequest, StudentRegisterRequest } from '../models/studentModel';
+import { StudentService } from '../services/studentService';
+import { TeacherService } from '../services/teacherService';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { matchedData } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
-import {
-  StudentNotificationRequest,
-  StudentRegisterRequest,
-} from '../models/studentModel';
-import { StudentService } from '../services/studentService';
-import { TeacherService } from '../services/teacherService';
+
+const LOG = new Logger('studentController.ts');
 
 export class StudentController {
   private teacherService = new TeacherService();
@@ -36,7 +36,7 @@ export class StudentController {
 
       res.sendStatus(StatusCodes.NO_CONTENT);
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       next(error);
     }
   };
@@ -55,7 +55,7 @@ export class StudentController {
         students: students.data,
       });
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       next(error);
     }
   };
@@ -72,6 +72,7 @@ export class StudentController {
 
       res.sendStatus(StatusCodes.NO_CONTENT);
     } catch (error) {
+      LOG.error(error);
       next(error);
     }
   };
@@ -113,6 +114,7 @@ export class StudentController {
         recipients: result.data,
       });
     } catch (error) {
+      LOG.error(error);
       next(error);
     }
   };

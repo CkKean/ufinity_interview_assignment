@@ -1,5 +1,5 @@
-import { check, query } from 'express-validator';
 import ValidationHandler from '../../utils/validationHandler';
+import { check, query } from 'express-validator';
 
 export const studentRule = {
   forRegister: [

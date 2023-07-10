@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import errorHandler from '../../middlewares/ruleErrorHandler';
 import { studentRule } from '../../middlewares/rules/studentRule';
 import { TEST_INTERCEPTOR } from '../../utils/testHelper';
+import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 let mockRequest: Partial<Request>;
 let mockResponse: Partial<Response>;
@@ -40,6 +40,7 @@ describe('Test /api/register input validation', () => {
       message: 'Invalid teacher email format.',
     });
   });
+
   test('Should return an error message "Teacher email is required." if the teacher input is empty.', async () => {
     mockRequest = {
       body: {
@@ -61,6 +62,7 @@ describe('Test /api/register input validation', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return an error message "Teacher email is required." if the teacher input is not provided.', async () => {
     mockRequest = {
       body: {
@@ -81,6 +83,7 @@ describe('Test /api/register input validation', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return error message "Student email is required." if 0 student input.', async () => {
     mockRequest = {
       body: {
@@ -102,6 +105,7 @@ describe('Test /api/register input validation', () => {
       message: 'Student email is required.',
     });
   });
+
   test('Should return error message "Student email is required." if students input is not provided.', async () => {
     mockRequest = {
       body: {
@@ -122,6 +126,7 @@ describe('Test /api/register input validation', () => {
       message: 'Student email is required.',
     });
   });
+
   test('Should return error message "Invalid student(s) email format." if student email format is invalid.', async () => {
     mockRequest = {
       body: {
@@ -164,6 +169,7 @@ describe('Test /api/commonstudents input validation', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return error message "Teacher email is required." if teacher input is empty string.', async () => {
     mockRequest = {
       query: {
@@ -184,6 +190,7 @@ describe('Test /api/commonstudents input validation', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return error message "Invalid teacher email format." if teacher email format is invalid.', async () => {
     mockRequest = {
       query: {
@@ -225,6 +232,7 @@ describe('Test /api/commonstudents input validation', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return error message "Teacher email is required." if teacher input is empty string.', async () => {
     mockRequest = {
       query: {
@@ -245,6 +253,7 @@ describe('Test /api/commonstudents input validation', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return error message "Invalid teacher email format." if teacher email format is invalid.', async () => {
     mockRequest = {
       query: {
@@ -288,6 +297,7 @@ describe('Test /api/suspend input validation', () => {
       message: 'Invalid student email format.',
     });
   });
+
   test('Should return an error message "Student email is required." if student email is empty string.', async () => {
     mockRequest = {
       body: {
@@ -308,6 +318,7 @@ describe('Test /api/suspend input validation', () => {
       message: 'Student email is required.',
     });
   });
+
   test('Should return an error message "Student email is required." if student email input is not provided.', async () => {
     mockRequest = {
       body: {},
@@ -350,6 +361,7 @@ describe('POST /api/retrievefornotifications', () => {
       message: 'Invalid teacher email format.',
     });
   });
+
   test('Should return error message "Teacher email is required." if teacher email is empty string.', async () => {
     mockRequest = {
       body: {
@@ -371,6 +383,7 @@ describe('POST /api/retrievefornotifications', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return error message "Teacher email is required." if teacher email input is not provided.', async () => {
     mockRequest = {
       body: { notification: 'Hello students!' },
@@ -389,6 +402,7 @@ describe('POST /api/retrievefornotifications', () => {
       message: 'Teacher email is required.',
     });
   });
+
   test('Should return error message "Notification is required." if notification is empty string', async () => {
     mockRequest = {
       body: {
@@ -410,6 +424,7 @@ describe('POST /api/retrievefornotifications', () => {
       message: 'Notification is required.',
     });
   });
+  
   test('Should return error message "Notification is required." if notification input is not provided.', async () => {
     mockRequest = {
       body: {

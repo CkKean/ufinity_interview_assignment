@@ -1,8 +1,10 @@
-import { StatusCodes } from 'http-status-codes';
+import Logger from '../config/logger';
 import ErrorBase from '../errors/ErrorBase';
 import { Teacher, TeacherCreateModel } from '../models/teacherModel';
 import ValidationHandler from '../utils/validationHandler';
+import { StatusCodes } from 'http-status-codes';
 
+const LOG = new Logger('teacherController.ts');
 export class TeacherService {
   create = async ({ teacher_email }: TeacherCreateModel) => {
     try {
@@ -21,7 +23,7 @@ export class TeacherService {
         message: 'Create teacher successfully',
       };
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       return { status: false, error };
     }
   };
@@ -50,7 +52,7 @@ export class TeacherService {
         message: 'Retrieve teacher successfully.',
       };
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       return { status: false, error };
     }
   };

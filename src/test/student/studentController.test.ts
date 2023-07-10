@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { StudentController } from '../../controllers/studentController';
 import ErrorBase from '../../errors/ErrorBase';
 import { studentRule } from '../../middlewares/rules/studentRule';
 import { StudentService } from '../../services/studentService';
 import { TeacherService } from '../../services/teacherService';
 import { TEST_INTERCEPTOR } from '../../utils/testHelper';
+import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 jest.mock('../../services/studentService');
 jest.mock('../../services/teacherService');

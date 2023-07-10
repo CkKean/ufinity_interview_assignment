@@ -1,6 +1,5 @@
-import { StatusCodes } from 'http-status-codes';
-import { Op, Sequelize } from 'sequelize';
 import sequelize from '../config/database';
+import Logger from '../config/logger';
 import { STUDENT_STATUS } from '../const/studentStatus';
 import { TEACHER_STATUS } from '../const/teacherStatus';
 import { TEACHER_STUDENT_RELATIONSHIP_STATUS } from '../const/teacherStudentRelationshipStatus';
@@ -11,6 +10,11 @@ import {
   TeacherStudentRelationship,
   TeacherStudentRelationshipModel,
 } from '../models/teacherStudentRelationshipModel';
+import { StatusCodes } from 'http-status-codes';
+import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+
+const LOG = new Logger('studentService.ts');
 
 export class StudentService {
   register = async ({
@@ -22,36 +26,38 @@ export class StudentService {
   }) => {
     const t = await sequelize.transaction();
     try {
-      await Promise.all(
-        students.map(async (email: string) => {
-          const [student] = await Student.findOrCreate({
-            where: {
-              student_email: email,
-            },
-            transaction: t,
-          });
+      if (students.length > 0) {
+        await Promise.all(
+          students.map(async (email: string) => {
+            const [student] = await Student.findOrCreate({
+              where: {
+                student_email: email,
+              },
+              transaction: t,
+            });
 
-          const studentId = student.get('student_id');
+            const studentId = student.get('student_id');
 
-          await TeacherStudentRelationship.upsert(
-            {
-              student_id: studentId,
-              teacher_id: teacherId,
-              teacher_student_relationship_updated_at: new Date(),
-            },
-            { transaction: t }
-          );
-        })
-      );
-
+            await TeacherStudentRelationship.upsert(
+              {
+                student_id: studentId,
+                teacher_id: teacherId,
+                teacher_student_relationship_updated_at: new Date(),
+              },
+              { transaction: t }
+            );
+          })
+        );
+      }
       await t.commit();
+
       return {
         status: true,
         message: 'Register student successfully.',
       };
     } catch (error) {
       await t.rollback();
-      console.log(error);
+      LOG.error(error);
       return { status: false, error };
     }
   };
@@ -92,7 +98,7 @@ export class StudentService {
         message: 'Retrieve common student successfully.',
       };
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       return {
         status: false,
         error,
@@ -144,7 +150,7 @@ export class StudentService {
       };
     } catch (error) {
       await t.rollback();
-      console.log(error);
+      LOG.error(error);
       return {
         status: false,
         error,
@@ -178,7 +184,7 @@ export class StudentService {
         attributes: [[Sequelize.col('student.student_email'), 'student_email']],
         raw: true,
       });
-      
+
       const data = [
         ...studentEmails,
         ...registeredStudents.map(
@@ -196,7 +202,7 @@ export class StudentService {
         message: 'Retrieve student notification email successfully.',
       };
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       return {
         status: false,
         error,
