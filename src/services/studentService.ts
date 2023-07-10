@@ -166,35 +166,44 @@ export class StudentService {
       const registeredStudents = await TeacherStudentRelationship.findAll({
         where: {
           teacher_id: teacherId,
-          teacher_student_relationship_status:
-            TEACHER_STUDENT_RELATIONSHIP_STATUS.ACTIVE,
         },
         include: [
           {
             model: Student,
-            where: {
-              student_status: STUDENT_STATUS.ACTIVE,
-              student_email: {
-                [Op.notIn]: studentEmails,
-              },
-            },
             attributes: [],
           },
         ],
-        attributes: [[Sequelize.col('student.student_email'), 'student_email']],
+        attributes: [
+          [Sequelize.col('student.student_email'), 'student_email'],
+          [Sequelize.col('student.student_status'), 'student_status'],
+        ],
         raw: true,
       });
 
-      const data = [
-        ...studentEmails,
-        ...registeredStudents.map(
-          (
-            student: TeacherStudentRelationshipModel & {
-              student_email?: string;
+      const studentEmailSet = new Set(studentEmails);
+      const registeredEmails: string[] = [];
+
+      registeredStudents.forEach(
+        ({
+          student_email,
+          student_status,
+        }: Partial<TeacherStudentRelationship> & {
+          student_email?: string;
+          student_status?: number;
+        }) => {
+          if (studentEmailSet.has(student_email)) {
+            if (student_status === STUDENT_STATUS.ACTIVE) {
+              registeredEmails.push(student_email);
+            } else {
+              studentEmailSet.delete(student_email);
             }
-          ) => student.student_email
-        ),
-      ];
+          } else if (student_status === STUDENT_STATUS.ACTIVE) {
+            registeredEmails.push(student_email);
+          }
+        }
+      );
+
+      const data = [...studentEmailSet].concat(registeredEmails);
 
       return {
         status: true,
