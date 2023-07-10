@@ -1,5 +1,8 @@
 import Logger from '../config/logger';
-import { StudentNotificationRequest, StudentRegisterRequest } from '../models/studentModel';
+import {
+  StudentNotificationRequest,
+  StudentRegisterRequest,
+} from '../models/studentModel';
 import { StudentService } from '../services/studentService';
 import { TeacherService } from '../services/teacherService';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
@@ -45,7 +48,9 @@ export class StudentController {
     try {
       const { teacher } = matchedData(req);
 
-      const students = await this.studentService.getCommonStudent(teacher);
+      const students = await this.studentService.getCommonStudent(
+        Array.isArray(teacher) ? teacher : [teacher]
+      );
 
       if (!students.status) {
         throw students.error;

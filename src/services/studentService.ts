@@ -62,7 +62,7 @@ export class StudentService {
     }
   };
 
-  getCommonStudent = async (teacher: string[] | string) => {
+  getCommonStudent = async (teacher: string[]) => {
     try {
       const students = await TeacherStudentRelationship.findAll({
         include: [
@@ -70,7 +70,7 @@ export class StudentService {
             model: Teacher,
             where: {
               teacher_email: {
-                [Op.in]: Array.isArray(teacher) ? teacher : [teacher],
+                [Op.in]: teacher,
               },
               teacher_status: TEACHER_STATUS.ACTIVE,
             },
@@ -82,15 +82,30 @@ export class StudentService {
           },
         ],
         attributes: [[Sequelize.col('student.student_email'), 'student_email']],
-        group: ['student.student_email'],
         raw: true,
       });
 
-      const data: string[] = students.map(
-        (
-          student: TeacherStudentRelationshipModel & { student_email?: string }
-        ) => student.student_email
+      const common: { [email: string]: number } = {};
+      students.forEach(
+        ({
+          student_email,
+        }: TeacherStudentRelationshipModel & {
+          student_email?: string;
+        }) => {
+          if (common[student_email] !== undefined) {
+            common[student_email] = common[student_email] + 1; 
+          } else {
+            common[student_email] = 1;
+          }
+        }
       );
+
+      const data: string[] = [];
+      for (const [key, val] of Object.entries(common)) {
+        if (val > 0 && val === teacher.length) {
+          data.push(key);
+        }
+      }
 
       return {
         status: true,
