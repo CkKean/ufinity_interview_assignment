@@ -71,5 +71,3 @@ export class TeacherStudentRelationship extends Model<TeacherStudentRelationship
   @Column(DataType.DATE)
   teacher_student_relationship_updated_at: Date;
 }
-
-console.log('Test TeacherStudentRelationshipModel');

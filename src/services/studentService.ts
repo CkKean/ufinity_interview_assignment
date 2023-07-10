@@ -193,7 +193,7 @@ export class StudentService {
       return {
         status: true,
         data: data,
-        message: 'Retrieve student common successfully',
+        message: 'Retrieve student notification email successfully.',
       };
     } catch (error) {
       console.log(error);
