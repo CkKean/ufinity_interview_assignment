@@ -1,18 +1,25 @@
-import { NextFunction, RequestHandler } from 'express';
-import { matchedData } from 'express-validator';
-import { StatusCodes } from 'http-status-codes';
+import Logger from '../config/logger';
 import {
   StudentNotificationRequest,
   StudentRegisterRequest,
 } from '../models/studentModel';
 import { StudentService } from '../services/studentService';
 import { TeacherService } from '../services/teacherService';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { matchedData } from 'express-validator';
+import { StatusCodes } from 'http-status-codes';
+
+const LOG = new Logger('studentController.ts');
 
 export class StudentController {
   private teacherService = new TeacherService();
   private studentService = new StudentService();
 
-  register: RequestHandler = async (req, res, next: NextFunction) => {
+  register: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const { students, teacher } = matchedData(req) as StudentRegisterRequest;
 
@@ -32,7 +39,7 @@ export class StudentController {
 
       res.sendStatus(StatusCodes.NO_CONTENT);
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       next(error);
     }
   };
@@ -41,17 +48,19 @@ export class StudentController {
     try {
       const { teacher } = matchedData(req);
 
-      const students = await this.studentService.getCommonStudent(teacher);
+      const students = await this.studentService.getCommonStudent(
+        Array.isArray(teacher) ? teacher : [teacher]
+      );
 
       if (!students.status) {
         throw students.error;
       }
 
-      res.json({
+      res.status(StatusCodes.OK).json({
         students: students.data,
       });
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       next(error);
     }
   };
@@ -68,6 +77,7 @@ export class StudentController {
 
       res.sendStatus(StatusCodes.NO_CONTENT);
     } catch (error) {
+      LOG.error(error);
       next(error);
     }
   };
@@ -105,10 +115,11 @@ export class StudentController {
         throw result.error;
       }
 
-      res.json({
+      res.status(StatusCodes.OK).json({
         recipients: result.data,
       });
     } catch (error) {
+      LOG.error(error);
       next(error);
     }
   };

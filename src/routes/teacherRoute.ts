@@ -1,11 +1,10 @@
-import Express from 'express';
-import { teacherRule } from '../middlewares/rules/teacherRule';
+import { TeacherController } from '../controllers/teacherController';
 import errorHandler from '../middlewares/ruleErrorHandler';
-import { TeacherController } from '../controllers/TeacherController';
-
+import { teacherRule } from '../middlewares/rules/teacherRule';
+import Express from 'express';
 class TeacherRoute {
   teacherRoute = Express.Router();
-  
+
   private teacherController = new TeacherController();
 
   constructor() {

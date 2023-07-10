@@ -1,6 +1,5 @@
-import { StatusCodes } from 'http-status-codes';
-import { Op, Sequelize } from 'sequelize';
 import sequelize from '../config/database';
+import Logger from '../config/logger';
 import { STUDENT_STATUS } from '../const/studentStatus';
 import { TEACHER_STATUS } from '../const/teacherStatus';
 import { TEACHER_STUDENT_RELATIONSHIP_STATUS } from '../const/teacherStudentRelationshipStatus';
@@ -11,6 +10,11 @@ import {
   TeacherStudentRelationship,
   TeacherStudentRelationshipModel,
 } from '../models/teacherStudentRelationshipModel';
+import { StatusCodes } from 'http-status-codes';
+import { Op } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+
+const LOG = new Logger('studentService.ts');
 
 export class StudentService {
   register = async ({
@@ -22,41 +26,43 @@ export class StudentService {
   }) => {
     const t = await sequelize.transaction();
     try {
-      await Promise.all(
-        students.map(async (email: string) => {
-          const [student] = await Student.findOrCreate({
-            where: {
-              student_email: email,
-            },
-            transaction: t,
-          });
+      if (students.length > 0) {
+        await Promise.all(
+          students.map(async (email: string) => {
+            const [student] = await Student.findOrCreate({
+              where: {
+                student_email: email,
+              },
+              transaction: t,
+            });
 
-          const studentId = student.get('student_id');
+            const studentId = student.get('student_id');
 
-          await TeacherStudentRelationship.upsert(
-            {
-              student_id: studentId,
-              teacher_id: teacherId,
-              teacher_student_relationship_updated_at: new Date(),
-            },
-            { transaction: t }
-          );
-        })
-      );
-
+            await TeacherStudentRelationship.upsert(
+              {
+                student_id: studentId,
+                teacher_id: teacherId,
+                teacher_student_relationship_updated_at: new Date(),
+              },
+              { transaction: t }
+            );
+          })
+        );
+      }
       await t.commit();
+
       return {
         status: true,
         message: 'Register student successfully.',
       };
     } catch (error) {
       await t.rollback();
-      console.log(error);
+      LOG.error(error);
       return { status: false, error };
     }
   };
 
-  getCommonStudent = async (teacher: string[] | string) => {
+  getCommonStudent = async (teacher: string[]) => {
     try {
       const students = await TeacherStudentRelationship.findAll({
         include: [
@@ -64,7 +70,7 @@ export class StudentService {
             model: Teacher,
             where: {
               teacher_email: {
-                [Op.in]: Array.isArray(teacher) ? teacher : [teacher],
+                [Op.in]: teacher,
               },
               teacher_status: TEACHER_STATUS.ACTIVE,
             },
@@ -76,15 +82,30 @@ export class StudentService {
           },
         ],
         attributes: [[Sequelize.col('student.student_email'), 'student_email']],
-        group: ['student.student_email'],
         raw: true,
       });
 
-      const data: string[] = students.map(
-        (
-          student: TeacherStudentRelationshipModel & { student_email?: string }
-        ) => student.student_email
+      const common: { [email: string]: number } = {};
+      students.forEach(
+        ({
+          student_email,
+        }: TeacherStudentRelationshipModel & {
+          student_email?: string;
+        }) => {
+          if (common[student_email] !== undefined) {
+            common[student_email] = common[student_email] + 1; 
+          } else {
+            common[student_email] = 1;
+          }
+        }
       );
+
+      const data: string[] = [];
+      for (const [key, val] of Object.entries(common)) {
+        if (val > 0 && val === teacher.length) {
+          data.push(key);
+        }
+      }
 
       return {
         status: true,
@@ -92,7 +113,7 @@ export class StudentService {
         message: 'Retrieve common student successfully.',
       };
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       return {
         status: false,
         error,
@@ -144,7 +165,7 @@ export class StudentService {
       };
     } catch (error) {
       await t.rollback();
-      console.log(error);
+      LOG.error(error);
       return {
         status: false,
         error,
@@ -160,43 +181,52 @@ export class StudentService {
       const registeredStudents = await TeacherStudentRelationship.findAll({
         where: {
           teacher_id: teacherId,
-          teacher_student_relationship_status:
-            TEACHER_STUDENT_RELATIONSHIP_STATUS.ACTIVE,
         },
         include: [
           {
             model: Student,
-            where: {
-              student_status: STUDENT_STATUS.ACTIVE,
-              student_email: {
-                [Op.notIn]: studentEmails,
-              },
-            },
             attributes: [],
           },
         ],
-        attributes: [[Sequelize.col('student.student_email'), 'student_email']],
+        attributes: [
+          [Sequelize.col('student.student_email'), 'student_email'],
+          [Sequelize.col('student.student_status'), 'student_status'],
+        ],
         raw: true,
       });
 
-      const data = [
-        ...studentEmails,
-        ...registeredStudents.map(
-          (
-            student: TeacherStudentRelationshipModel & {
-              student_email?: string;
+      const studentEmailSet = new Set(studentEmails);
+      const registeredEmails: string[] = [];
+
+      registeredStudents.forEach(
+        ({
+          student_email,
+          student_status,
+        }: Partial<TeacherStudentRelationship> & {
+          student_email?: string;
+          student_status?: number;
+        }) => {
+          if (studentEmailSet.has(student_email)) {
+            if (student_status === STUDENT_STATUS.ACTIVE) {
+              registeredEmails.push(student_email);
+            } else {
+              studentEmailSet.delete(student_email);
             }
-          ) => student.student_email
-        ),
-      ];
+          } else if (student_status === STUDENT_STATUS.ACTIVE) {
+            registeredEmails.push(student_email);
+          }
+        }
+      );
+
+      const data = [...studentEmailSet].concat(registeredEmails);
 
       return {
         status: true,
         data: data,
-        message: 'Retrieve student common successfully',
+        message: 'Retrieve student notification email successfully.',
       };
     } catch (error) {
-      console.log(error);
+      LOG.error(error);
       return {
         status: false,
         error,

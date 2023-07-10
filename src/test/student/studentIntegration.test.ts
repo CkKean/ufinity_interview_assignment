@@ -1,7 +1,7 @@
 import supertest from 'supertest';
-import app from '../app'; // Import the Express app
-import sequelize from '../config/database';
-import { ModelInit } from '../config/modelInit';
+import app from '../../app'; // Import the Express app
+import sequelize from '../../config/database';
+import { ModelInit } from '../../config/modelInit';
 
 const supertestRequest = supertest(app);
 beforeAll(() => ModelInit(sequelize));

@@ -19,7 +19,6 @@ export interface StudentModel {
   student_status: number;
   student_created_at: Date;
   student_updated_at: Date;
-  student_suspended_by: number;
   student_suspended_at: Date;
 }
 
