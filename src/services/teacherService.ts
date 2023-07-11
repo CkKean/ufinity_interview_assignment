@@ -6,7 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 
 const LOG = new Logger('teacherController.ts');
 export class TeacherService {
-  create = async ({ teacher_email }: TeacherCreateModel) => {
+  public async create({ teacher_email }: TeacherCreateModel) {
     try {
       const [teacher, created] = await Teacher.findOrCreate({
         where: {
@@ -26,14 +26,14 @@ export class TeacherService {
       LOG.error(error);
       return { status: false, error };
     }
-  };
+  }
 
-  getByEmail = async (email: string) => {
+  public async getByEmail(email: string) {
     try {
       if (!ValidationHandler.isValidEmailFormat(email)) {
         throw new ErrorBase('Invalid teacher email1.', StatusCodes.BAD_REQUEST);
       }
-
+      console.log({email});
       const teacher = await Teacher.findOne({
         where: {
           teacher_email: email,
@@ -55,5 +55,5 @@ export class TeacherService {
       LOG.error(error);
       return { status: false, error };
     }
-  };
+  }
 }

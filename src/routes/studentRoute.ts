@@ -1,39 +1,33 @@
+import Express from 'express';
 import { StudentController } from '../controllers/studentController';
 import errorHandler from '../middlewares/ruleErrorHandler';
 import { studentRule } from '../middlewares/rules/studentRule';
-import Express from 'express';
 
-class StudentRoute {
-  studentRoute = Express.Router();
-  
-  private studentController = new StudentController();
+const studentRoute = Express.Router();
 
-  constructor() {
-    this.studentRoute.post(
-      '/register',
-      studentRule.forRegister,
-      errorHandler,
-      this.studentController.register
-    );
-    this.studentRoute.get(
-      '/commonstudents',
-      studentRule.forCommonStudents,
-      errorHandler,
-      this.studentController.getCommonStudents
-    );
-    this.studentRoute.post(
-      '/suspend',
-      studentRule.forSuspend,
-      errorHandler,
-      this.studentController.suspend
-    );
-    this.studentRoute.post(
-      '/retrievefornotifications',
-      studentRule.forRetrieveNotifications,
-      errorHandler,
-      this.studentController.getNotificationList
-    );
-  }
-}
+studentRoute.post(
+  '/register',
+  studentRule.forRegister,
+  errorHandler,
+  StudentController.register
+);
+studentRoute.get(
+  '/commonstudents',
+  studentRule.forCommonStudents,
+  errorHandler,
+  StudentController.getCommonStudents
+);
+studentRoute.post(
+  '/suspend',
+  studentRule.forSuspend,
+  errorHandler,
+  StudentController.suspend
+);
+studentRoute.post(
+  '/retrievefornotifications',
+  studentRule.forRetrieveNotifications,
+  errorHandler,
+  StudentController.getNotificationList
+);
 
-export default new StudentRoute();
+export default studentRoute;

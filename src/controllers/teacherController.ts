@@ -1,5 +1,5 @@
 import Logger from '../config/logger';
-import { NextFunction, RequestHandler } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { matchedData } from 'express-validator';
 import { StatusCodes } from 'http-status-codes';
 import { TeacherCreateModel } from '../models/teacherModel';
@@ -7,23 +7,29 @@ import { TeacherService } from '../services/teacherService';
 
 const LOG = new Logger('teacherController.ts');
 
-export class TeacherController {
-  teacherService = new TeacherService();
+const teacherService = new TeacherService();
 
-  create: RequestHandler = async (req, res, next: NextFunction) => {
-    try {
-      const { teacher_email } = matchedData(req) as TeacherCreateModel;
+const create: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { teacher_email } = matchedData(req) as TeacherCreateModel;
 
-      const result = await this.teacherService.create({ teacher_email });
+    const result = await teacherService.create({ teacher_email });
 
-      if (!result.status) {
-        throw result.error;
-      }
-
-      res.sendStatus(StatusCodes.OK);
-    } catch (error) {
-      LOG.error(error);
-      next(error);
+    if (!result.status) {
+      throw result.error;
     }
-  };
-}
+
+    res.sendStatus(StatusCodes.OK);
+  } catch (error) {
+    LOG.error(error);
+    next(error);
+  }
+};
+
+export const TeacherController = {
+  create,
+};

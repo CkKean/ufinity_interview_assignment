@@ -1,3 +1,6 @@
+import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { matchedData } from 'express-validator';
+import { StatusCodes } from 'http-status-codes';
 import Logger from '../config/logger';
 import {
   StudentNotificationRequest,
@@ -5,122 +8,135 @@ import {
 } from '../models/studentModel';
 import { StudentService } from '../services/studentService';
 import { TeacherService } from '../services/teacherService';
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { matchedData } from 'express-validator';
-import { StatusCodes } from 'http-status-codes';
+import ValidationHandler from '../utils/validationHandler';
 
 const LOG = new Logger('studentController.ts');
 
-export class StudentController {
-  private teacherService = new TeacherService();
-  private studentService = new StudentService();
+const teacherService = new TeacherService();
+const studentService = new StudentService();
 
-  register: RequestHandler = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { students, teacher } = matchedData(req) as StudentRegisterRequest;
+const register: RequestHandler = async (req, res, next: NextFunction) => {
+  try {
+    const { students, teacher } = matchedData(req) as StudentRegisterRequest;
 
-      const teacherData = await this.teacherService.getByEmail(teacher);
-      if (!teacherData.status) {
-        throw teacherData.error;
-      }
+    const teacherData = await teacherService.getByEmail(teacher);
 
-      const registerStudent = await this.studentService.register({
-        students,
-        teacherId: teacherData.data.teacher_id,
-      });
-
-      if (!registerStudent.status) {
-        throw registerStudent.error;
-      }
-
-      res.sendStatus(StatusCodes.NO_CONTENT);
-    } catch (error) {
-      LOG.error(error);
-      next(error);
+    if (!teacherData.status) {
+      throw teacherData.error;
     }
-  };
 
-  getCommonStudents: RequestHandler = async (req, res, next: NextFunction) => {
-    try {
-      const { teacher } = matchedData(req);
+    const registerStudent = await studentService.register({
+      students,
+      teacherId: teacherData.data.teacher_id,
+    });
 
-      const students = await this.studentService.getCommonStudent(
-        Array.isArray(teacher) ? teacher : [teacher]
-      );
-
-      if (!students.status) {
-        throw students.error;
-      }
-
-      res.status(StatusCodes.OK).json({
-        students: students.data,
-      });
-    } catch (error) {
-      LOG.error(error);
-      next(error);
+    if (!registerStudent.status) {
+      throw registerStudent.error;
     }
-  };
 
-  suspend: RequestHandler = async (req, res, next: NextFunction) => {
-    try {
-      const { student: studentEmail } = matchedData(req);
+    res.sendStatus(StatusCodes.NO_CONTENT);
+  } catch (error) {
+    LOG.error(error);
+    next(error);
+  }
+};
 
-      const result = await this.studentService.suspend(studentEmail);
+const getCommonStudents: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { teacher } = matchedData(req);
 
-      if (!result.status) {
-        throw result.error;
-      }
+    const students = await studentService.getCommonStudent(
+      Array.isArray(teacher) ? teacher : [teacher]
+    );
 
-      res.sendStatus(StatusCodes.NO_CONTENT);
-    } catch (error) {
-      LOG.error(error);
-      next(error);
+    if (!students.status) {
+      throw students.error;
     }
-  };
 
-  getNotificationList: RequestHandler = async (
-    req,
-    res,
-    next: NextFunction
-  ) => {
-    try {
-      const { notification, teacher } = matchedData(
-        req
-      ) as StudentNotificationRequest;
+    res.status(StatusCodes.OK).json({
+      students: students.data,
+    });
+  } catch (error) {
+    LOG.error(error);
+    next(error);
+  }
+};
 
-      const teacherData = await this.teacherService.getByEmail(teacher);
-      if (!teacherData.status) {
-        throw teacherData.error;
-      }
+const suspend: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { student: studentEmail } = matchedData(req);
 
-      const studentEmails =
-        [
-          ...new Set(
-            notification.match(
-              /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
-            )
-          ),
-        ] || [];
+    const result = await studentService.suspend(studentEmail);
 
-      const result = await this.studentService.getStudentNotificationList(
-        teacherData.data.teacher_id,
-        studentEmails
-      );
-
-      if (!result.status) {
-        throw result.error;
-      }
-
-      res.status(StatusCodes.OK).json({
-        recipients: result.data,
-      });
-    } catch (error) {
-      LOG.error(error);
-      next(error);
+    if (!result.status) {
+      throw result.error;
     }
-  };
-}
+
+    res.sendStatus(StatusCodes.NO_CONTENT);
+  } catch (error) {
+    LOG.error(error);
+    next(error);
+  }
+};
+
+const getNotificationList: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { notification, teacher } = matchedData(
+      req
+    ) as StudentNotificationRequest;
+
+    const teacherData = await teacherService.getByEmail(teacher);
+    if (!teacherData.status) {
+      throw teacherData.error;
+    }
+
+    // const studentEmails =
+    // [
+    //   ...new Set(
+    //     notification.match(
+    //       /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
+    //       /[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,}/
+    //     )
+    //   ),
+    // ] || [];
+
+    const studentEmails =
+      [...new Set(notification.match(ValidationHandler.emailRegex))] ||
+      [];
+    console.log({ studentEmails });
+    const result = await studentService.getStudentNotificationList(
+      teacherData.data.teacher_id,
+      studentEmails
+    );
+
+    if (!result.status) {
+      throw result.error;
+    }
+
+    res.status(StatusCodes.OK).json({
+      recipients: result.data,
+    });
+  } catch (error) {
+    LOG.error(error);
+    next(error);
+  }
+};
+
+export const StudentController = {
+  register,
+  suspend,
+  getNotificationList,
+  getCommonStudents,
+};
