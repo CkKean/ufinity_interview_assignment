@@ -15,7 +15,11 @@ const LOG = new Logger('studentController.ts');
 const teacherService = new TeacherService();
 const studentService = new StudentService();
 
-const register: RequestHandler = async (req, res, next: NextFunction) => {
+const register: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { students, teacher } = matchedData(req) as StudentRegisterRequest;
 
@@ -102,20 +106,9 @@ const getNotificationList: RequestHandler = async (
       throw teacherData.error;
     }
 
-    // const studentEmails =
-    // [
-    //   ...new Set(
-    //     notification.match(
-    //       /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g
-    //       /[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,}/
-    //     )
-    //   ),
-    // ] || [];
-
     const studentEmails =
-      [...new Set(notification.match(ValidationHandler.emailRegex))] ||
-      [];
-    console.log({ studentEmails });
+      [...new Set(notification.match(ValidationHandler.emailRegex))] || [];
+
     const result = await studentService.getStudentNotificationList(
       teacherData.data.teacher_id,
       studentEmails
@@ -140,3 +133,35 @@ export const StudentController = {
   getNotificationList,
   getCommonStudents,
 };
+
+export class StudentController1 {
+  public static register: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { students, teacher } = matchedData(req) as StudentRegisterRequest;
+
+      const teacherData = await teacherService.getByEmail(teacher);
+
+      if (!teacherData.status) {
+        throw teacherData.error;
+      }
+
+      const registerStudent = await studentService.register({
+        students,
+        teacherId: teacherData.data.teacher_id,
+      });
+
+      if (!registerStudent.status) {
+        throw registerStudent.error;
+      }
+
+      res.sendStatus(StatusCodes.NO_CONTENT);
+    } catch (error) {
+      LOG.error(error);
+      next(error);
+    }
+  };
+}

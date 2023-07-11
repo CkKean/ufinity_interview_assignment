@@ -1,5 +1,7 @@
 import Express from 'express';
-import { StudentController } from '../controllers/studentController';
+import {
+  StudentController
+} from '../controllers/studentController';
 import errorHandler from '../middlewares/ruleErrorHandler';
 import { studentRule } from '../middlewares/rules/studentRule';
 

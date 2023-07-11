@@ -33,7 +33,7 @@ export class TeacherService {
       if (!ValidationHandler.isValidEmailFormat(email)) {
         throw new ErrorBase('Invalid teacher email1.', StatusCodes.BAD_REQUEST);
       }
-      console.log({email});
+      
       const teacher = await Teacher.findOne({
         where: {
           teacher_email: email,

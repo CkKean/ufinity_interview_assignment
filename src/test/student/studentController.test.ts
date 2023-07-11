@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { StudentController } from '../../controllers/studentController';
 import ErrorBase from '../../errors/ErrorBase';
 import { studentRule } from '../../middlewares/rules/studentRule';
+import { Teacher } from '../../models/teacherModel';
 import { StudentService } from '../../services/studentService';
 import { TeacherService } from '../../services/teacherService';
 import { TEST_INTERCEPTOR } from '../../utils/testHelper';
-import { StudentController } from '../../controllers/studentController';
-import { Teacher } from '../../models/teacherModel';
 
 jest.mock('../../services/studentService');
 jest.mock('../../services/teacherService');
@@ -14,21 +14,15 @@ jest.mock('../../services/teacherService');
 let mockRequest: Partial<Request>;
 let mockResponse: Partial<Response>;
 let mockNext: NextFunction;
-// let teacherService: jest.Mock;
-// let studentService: jest.Mock;
 
 beforeEach(() => {
   mockRequest = TEST_INTERCEPTOR.mockRequest();
   mockResponse = TEST_INTERCEPTOR.mockResponse();
   mockNext = jest.fn();
-  // teacherService = TeacherService as jest.Mock;
-  // studentService = StudentService as jest.Mock;
 });
 
 afterEach(() => {
   jest.resetAllMocks();
-  // teacherService.mockClear();
-  // studentService.mockClear();
 });
 
 describe('Test register controller function', () => {
@@ -582,6 +576,10 @@ describe('Test getNotificationList controller function', () => {
 
     expect(getByEmail).toHaveBeenCalledTimes(1);
     expect(getStudentNotificationList).toHaveBeenCalledTimes(1);
+    expect(getStudentNotificationList).toHaveBeenLastCalledWith(1, [
+      'studentagnes@gmail.com',
+      'studentmiche@gmail.com',
+    ]);
     expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.OK);
     expect(mockResponse.json).toHaveBeenCalledWith({
       recipients: data,
