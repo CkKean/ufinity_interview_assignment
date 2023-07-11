@@ -212,13 +212,8 @@ describe('Test getCommonStudent service function', () => {
   });
 
   test('Should return common student emails of a list of teacher.', async () => {
-    const teacher = ['teacherkang@gmail.com', 'teacherping@gmail.com'];
-    const data = [
-      { student_email: 'student1@gmail.com' },
-      { student_email: 'student2@gmail.com' },
-      { student_email: 'student3@gmail.com' },
-      { student_email: 'student4@gmail.com' },
-    ];
+    const teacher = ['teacherken@gmail.com', 'teacherjoe@gmail.com'];
+    const data = [{ student_email: 'commonstudent2@gmail.com' }];
     jest
       .spyOn(TeacherStudentRelationship, 'findAll')
       .mockResolvedValueOnce(
@@ -227,12 +222,7 @@ describe('Test getCommonStudent service function', () => {
     const mockStudentService = new StudentService();
     const result = await mockStudentService.getCommonStudent(teacher);
     expect(result).toEqual({
-      data: expect.arrayContaining([
-        'student1@gmail.com',
-        'student2@gmail.com',
-        'student3@gmail.com',
-        'student4@gmail.com',
-      ]),
+      data: expect.arrayContaining(['commonstudent2@gmail.com']),
       status: true,
       message: 'Retrieve common student successfully.',
     });
@@ -371,12 +361,16 @@ describe('Test getNotificationList service function', () => {
   test('Should return registered student emails only', async () => {
     const studentEmails: string[] = [];
     const teacherId = 1;
+
+    jest.spyOn(Student, 'findAll').mockResolvedValueOnce([]);
+
     jest
       .spyOn(TeacherStudentRelationship, 'findAll')
       .mockResolvedValueOnce([
-        { student_email: 'student1@gmail.com' },
-        { student_email: 'student2@gmail.com' },
+        { student_email: 'commonstudent1@gmail.com' },
+        { student_email: 'commonstudent2@gmail.com' },
       ] as Array<TeacherStudentRelationship & { student_email?: string }>);
+
     const mockStudentService = new StudentService();
     const result = await mockStudentService.getStudentNotificationList(
       teacherId,
@@ -384,33 +378,42 @@ describe('Test getNotificationList service function', () => {
     );
     expect(result).toEqual({
       data: expect.arrayContaining([
-        'student1@gmail.com',
-        'student2@gmail.com',
+        'commonstudent1@gmail.com',
+        'commonstudent2@gmail.com',
       ]),
       status: true,
       message: 'Retrieve student notification email successfully.',
     });
   });
 
-  test('Should return registered emails and notification emails', async () => {
-    const studentEmails = ['student3@gmail.com'];
+  test('Should return registered emails and existing notification emails', async () => {
+    const studentEmails = ['commonstudent3@gmail.com', 'studentnone@gmail.com'];
     const teacherId = 1;
+
+    jest
+      .spyOn(Student, 'findAll')
+      .mockResolvedValueOnce([
+        { student_email: 'commonstudent3@gmail.com' },
+      ] as Array<Student>);
+
     jest
       .spyOn(TeacherStudentRelationship, 'findAll')
       .mockResolvedValueOnce([
-        { student_email: 'student1@gmail.com' },
-        { student_email: 'student2@gmail.com' },
+        { student_email: 'commonstudent1@gmail.com' },
+        { student_email: 'commonstudent2@gmail.com' },
       ] as Array<TeacherStudentRelationship & { student_email?: string }>);
+
     const mockStudentService = new StudentService();
     const result = await mockStudentService.getStudentNotificationList(
       teacherId,
       studentEmails
     );
+
     expect(result).toEqual({
       data: expect.arrayContaining([
-        'student1@gmail.com',
-        'student2@gmail.com',
-        'student3@gmail.com',
+        'commonstudent1@gmail.com',
+        'commonstudent2@gmail.com',
+        'commonstudent3@gmail.com',
       ]),
       status: true,
       message: 'Retrieve student notification email successfully.',
@@ -420,7 +423,11 @@ describe('Test getNotificationList service function', () => {
   test('Should return zero emails', async () => {
     const studentEmails: string[] = [];
     const teacherId = 1;
+
+    jest.spyOn(Student, 'findAll').mockResolvedValueOnce([]);
+
     jest.spyOn(TeacherStudentRelationship, 'findAll').mockResolvedValueOnce([]);
+
     const mockStudentService = new StudentService();
     const result = await mockStudentService.getStudentNotificationList(
       teacherId,

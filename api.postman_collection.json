@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d32a4b50-d9a3-4296-b50f-df88e87edc00",
+		"_postman_id": "e2f41dd9-ccdd-40e2-a919-88fbebb3a481",
 		"name": "Ufinity",
 		"description": "APIs are available for the test assignment from Ufinity.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -64,7 +64,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"teacher\": \"teacherkang@gmail.com\",\r\n    \"students\": [\r\n        \"studentjon1@gmail.com\",\r\n        \"studentjon2@gmail.com\",\r\n        \"studentjon3@gmail.com\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"teacher\": \"teacherkang@gmail.com\",\r\n    \"students\": [\r\n        \"studentkang1@gmail.com\",\r\n        \"studentkang2@gmail.com\",\r\n        \"studentkang3@gmail.com\",\r\n        \"commonstudent1@gmail.com\"\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -94,7 +94,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"student\": \"commonstudent@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"student\": \"commonstudent1@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -124,7 +124,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \r\n  \"teacher\": \"teacherken@gmail.com\",\r\n  \"notification\": \"Hello students! @studentagnes@gmail.com @studentmichee@gmail.com\"\r\n}\r\n",
+							"raw": "{ \r\n  \"teacher\": \"teacherken@gmail.com\",\r\n  \"notification\": \"Hello students! @commonstudent1@gmail.com @studentkang1@gmail.com @commonstudent5@gmail.com @none@gmail.com\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"

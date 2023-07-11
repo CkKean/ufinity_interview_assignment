@@ -1,11 +1,12 @@
+import { NextFunction, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 import { StudentController } from '../../controllers/studentController';
 import ErrorBase from '../../errors/ErrorBase';
 import { studentRule } from '../../middlewares/rules/studentRule';
+import { Teacher } from '../../models/teacherModel';
 import { StudentService } from '../../services/studentService';
 import { TeacherService } from '../../services/teacherService';
 import { TEST_INTERCEPTOR } from '../../utils/testHelper';
-import { NextFunction, Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
 jest.mock('../../services/studentService');
 jest.mock('../../services/teacherService');
@@ -13,21 +14,15 @@ jest.mock('../../services/teacherService');
 let mockRequest: Partial<Request>;
 let mockResponse: Partial<Response>;
 let mockNext: NextFunction;
-let teacherService: jest.Mock;
-let studentService: jest.Mock;
 
 beforeEach(() => {
   mockRequest = TEST_INTERCEPTOR.mockRequest();
   mockResponse = TEST_INTERCEPTOR.mockResponse();
   mockNext = jest.fn();
-  teacherService = TeacherService as jest.Mock;
-  studentService = StudentService as jest.Mock;
 });
 
 afterEach(() => {
   jest.resetAllMocks();
-  teacherService.mockClear();
-  studentService.mockClear();
 });
 
 describe('Test register controller function', () => {
@@ -38,36 +33,40 @@ describe('Test register controller function', () => {
         students: ['studentjon1@gmail.com', 'studentjohn@gmail.com'],
       },
     };
+
+    await TEST_INTERCEPTOR.ruleValidation(
+      studentRule.forRegister,
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext
+    );
+
     const error = new ErrorBase('Teacher does not exist.', StatusCodes.OK);
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error: error,
-    });
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
-    const register = jest.fn().mockResolvedValueOnce({
-      status: true,
-      message: 'Register student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        register: register as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: false,
+        error: error,
+      });
+
+    const register = jest
+      .spyOn(StudentService.prototype, 'register')
+      .mockResolvedValueOnce({
+        status: true,
+        message: 'Register student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.register(
+      StudentController.register(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
       )
     );
+
     expect(getByEmail).toHaveBeenCalledTimes(1);
     expect(register).toHaveBeenCalledTimes(0);
-    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledTimes(4); // Include validation next
     expect(mockNext).toHaveBeenCalledWith(
       new ErrorBase('Teacher does not exist.', StatusCodes.OK)
     );
@@ -80,28 +79,31 @@ describe('Test register controller function', () => {
         students: ['studentjon1@gmail.com', 'studentjohn@gmail.com'],
       },
     };
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
-    const register = jest.fn().mockResolvedValueOnce({
-      status: true,
-      message: 'Register student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        register: register as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+
+    await TEST_INTERCEPTOR.ruleValidation(
+      studentRule.forRegister,
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext
+    );
+
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
+
+    const register = jest
+      .spyOn(StudentService.prototype, 'register')
+      .mockResolvedValueOnce({
+        status: true,
+        message: 'Register student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.register(
+      StudentController.register(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -109,6 +111,7 @@ describe('Test register controller function', () => {
     );
     expect(getByEmail).toHaveBeenCalledTimes(1);
     expect(register).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledTimes(3);
     expect(mockResponse.sendStatus).toHaveBeenCalledWith(
       StatusCodes.NO_CONTENT
     );
@@ -121,37 +124,41 @@ describe('Test register controller function', () => {
         students: ['studentjon1@gmail.com', 'studentjohn@gmail.com'],
       },
     };
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
+
+    await TEST_INTERCEPTOR.ruleValidation(
+      studentRule.forRegister,
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext
+    );
+
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
+
     const error = new Error('Internal Server Error');
-    const register = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error: error,
-    });
-    studentService.mockImplementation(() => {
-      return {
-        register: register as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const register = jest
+      .spyOn(StudentService.prototype, 'register')
+      .mockResolvedValueOnce({
+        status: false,
+        error: error,
+      });
+
     await Promise.resolve(
-      studentController.register(
+      StudentController.register(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
       )
     );
+
     expect(getByEmail).toHaveBeenCalledTimes(1);
     expect(register).toHaveBeenCalledTimes(1);
-    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockNext).toHaveBeenCalledTimes(4);
     expect(mockNext).toHaveBeenCalledWith(error);
   });
 
@@ -162,40 +169,44 @@ describe('Test register controller function', () => {
         students: ['newStudent1@gmail.com'],
       },
     };
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
-    const register = jest.fn().mockResolvedValueOnce({
-      status: true,
-      message: 'Register student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        register: register as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+
+    await TEST_INTERCEPTOR.ruleValidation(
+      studentRule.forRegister,
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext
+    );
+
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
+
+    const register = jest
+      .spyOn(StudentService.prototype, 'register')
+      .mockResolvedValueOnce({
+        status: true,
+        message: 'Register student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.register(
+      StudentController.register(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
       )
     );
+
     expect(getByEmail).toHaveBeenCalledTimes(1);
     expect(register).toHaveBeenCalledTimes(1);
     expect(mockResponse.sendStatus).toHaveBeenCalledWith(
       StatusCodes.NO_CONTENT
     );
   });
-  
+
   test('Should return HTTP status 204 with no content if register multiple new students successfully.', async () => {
     mockRequest = {
       body: {
@@ -203,28 +214,31 @@ describe('Test register controller function', () => {
         students: ['newStudent2@gmail.com', 'newStudent3@gmail.com'],
       },
     };
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
-    const register = jest.fn().mockResolvedValueOnce({
-      status: true,
-      message: 'Register student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        register: register as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+
+    await TEST_INTERCEPTOR.ruleValidation(
+      studentRule.forRegister,
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext
+    );
+
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
+
+    const register = jest
+      .spyOn(StudentService.prototype, 'register')
+      .mockResolvedValueOnce({
+        status: true,
+        message: 'Register student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.register(
+      StudentController.register(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -245,24 +259,30 @@ describe('Test getCommonStudents controller function', () => {
         teacher: ['teacherken@gmail.com'],
       },
     };
+
+    await TEST_INTERCEPTOR.ruleValidation(
+      studentRule.forCommonStudents,
+      mockRequest as Request,
+      mockResponse as Response,
+      mockNext
+    );
+
     const responseData = [
       'commonstudent1@gmail.com',
       'commonstudent2@gmail.com',
       'commonstudent5@gmail.com',
     ];
-    const getCommonStudent = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: responseData,
-      message: 'Retrieve common student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        getCommonStudent: getCommonStudent as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+
+    const getCommonStudent = jest
+      .spyOn(StudentService.prototype, 'getCommonStudent')
+      .mockResolvedValueOnce({
+        status: true,
+        data: responseData as string[],
+        message: 'Retrieve common student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.getCommonStudents(
+      StudentController.getCommonStudents(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -281,25 +301,18 @@ describe('Test getCommonStudents controller function', () => {
         teacher: ['teacherken@gmail.com', 'teacherjoe@gmail.com'],
       },
     };
-    const responseData = [
-      'commonstudent1@gmail.com',
-      'commonstudent2@gmail.com',
-      'commonstudent5@gmail.com',
-      'commonstudent3@gmail.com',
-    ];
-    const getCommonStudent = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: responseData,
-      message: 'Retrieve common student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        getCommonStudent: getCommonStudent as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const responseData = ['commonstudent2@gmail.com'];
+
+    const getCommonStudent = jest
+      .spyOn(StudentService.prototype, 'getCommonStudent')
+      .mockResolvedValueOnce({
+        status: true,
+        data: responseData as string[],
+        message: 'Retrieve common student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.getCommonStudents(
+      StudentController.getCommonStudents(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -317,19 +330,16 @@ describe('Test getCommonStudents controller function', () => {
       },
     };
     const responseData: string[] = [];
-    const getCommonStudent = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: responseData,
-      message: 'Retrieve common student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        getCommonStudent: getCommonStudent as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const getCommonStudent = jest
+      .spyOn(StudentService.prototype, 'getCommonStudent')
+      .mockResolvedValueOnce({
+        status: true,
+        data: responseData as string[],
+        message: 'Retrieve common student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.getCommonStudents(
+      StudentController.getCommonStudents(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -347,18 +357,15 @@ describe('Test getCommonStudents controller function', () => {
       },
     };
     const error = new Error('Internal Server Error');
-    const getCommonStudent = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error: error,
-    });
-    studentService.mockImplementation(() => {
-      return {
-        getCommonStudent: getCommonStudent as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const getCommonStudent = jest
+      .spyOn(StudentService.prototype, 'getCommonStudent')
+      .mockResolvedValueOnce({
+        status: false,
+        error: error,
+      });
+
     await Promise.resolve(
-      studentController.getCommonStudents(
+      StudentController.getCommonStudents(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -378,18 +385,15 @@ describe('Test suspend controller function', () => {
       },
     };
     const error = new ErrorBase('Student does not exist.', StatusCodes.OK);
-    const suspend = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error: error,
-    });
-    studentService.mockImplementation(() => {
-      return {
-        suspend: suspend as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const suspend = jest
+      .spyOn(StudentService.prototype, 'suspend')
+      .mockResolvedValueOnce({
+        status: false,
+        error: error,
+      });
+
     await Promise.resolve(
-      studentController.suspend(
+      StudentController.suspend(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -406,18 +410,16 @@ describe('Test suspend controller function', () => {
         student: 'commonstudent4@gmail.com',
       },
     };
-    const suspend = jest.fn().mockResolvedValueOnce({
-      status: true,
-      message: 'Suspend student successfully.',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        suspend: suspend as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+
+    const suspend = jest
+      .spyOn(StudentService.prototype, 'suspend')
+      .mockResolvedValueOnce({
+        status: true,
+        message: 'Suspend student successfully.',
+      });
+
     await Promise.resolve(
-      studentController.suspend(
+      StudentController.suspend(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -436,18 +438,15 @@ describe('Test suspend controller function', () => {
       },
     };
     const error = new ErrorBase('Student does not exist.', StatusCodes.OK);
-    const suspend = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error,
-    });
-    studentService.mockImplementation(() => {
-      return {
-        suspend: suspend as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const suspend = jest
+      .spyOn(StudentService.prototype, 'suspend')
+      .mockResolvedValueOnce({
+        status: false,
+        error,
+      });
+
     await Promise.resolve(
-      studentController.suspend(
+      StudentController.suspend(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -465,18 +464,15 @@ describe('Test suspend controller function', () => {
       },
     };
     const error = new Error('Internal Server Error');
-    const suspend = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error: error,
-    });
-    studentService.mockImplementation(() => {
-      return {
-        suspend: suspend as jest.Mock,
-      };
-    });
-    const studentController = new StudentController();
+    const suspend = jest
+      .spyOn(StudentService.prototype, 'suspend')
+      .mockResolvedValueOnce({
+        status: false,
+        error: error,
+      });
+
     await Promise.resolve(
-      studentController.suspend(
+      StudentController.suspend(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -502,36 +498,27 @@ describe('Test getNotificationList controller function', () => {
       mockRequest as Request,
       mockResponse as Response,
       mockNext
-    ); // Input Validations
+    );
 
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail as jest.Mock,
-      };
-    });
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
 
     const data = ['commonstudent1@gmail.com', 'commonstudent2@gmail.com'];
-    const studentNotificationList = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: data,
-      message: 'Retrieve student common successfully',
-    });
+    const studentNotificationList = jest
+      .spyOn(StudentService.prototype, 'getStudentNotificationList')
+      .mockResolvedValueOnce({
+        status: true,
+        data: data,
+        message: 'Retrieve student common successfully',
+      });
 
-    studentService.mockImplementation(() => {
-      return {
-        getStudentNotificationList: studentNotificationList as jest.Mock,
-      };
-    });
-
-    const studentController = new StudentController();
     await Promise.resolve(
-      studentController.getNotificationList(
+      StudentController.getNotificationList(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -546,7 +533,7 @@ describe('Test getNotificationList controller function', () => {
     });
   });
 
-  test('Should return a list of email mentioned in notification and registered student email.', async () => {
+  test('Should return a list of existing email mentioned in notification and student email.', async () => {
     mockRequest = {
       body: {
         teacher: 'teacherken@gmail.com',
@@ -562,39 +549,25 @@ describe('Test getNotificationList controller function', () => {
       mockNext
     ); // Input Validations
 
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
 
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
+    const data = ['commonstudent1@gmail.com', 'commonstudent2@gmail.com'];
+    const getStudentNotificationList = jest
+      .spyOn(StudentService.prototype, 'getStudentNotificationList')
+      .mockResolvedValueOnce({
+        status: true,
+        data: data,
+        message: 'Retrieve student common successfully',
+      });
 
-    const data = [
-      'commonstudent1@gmail.com',
-      'commonstudent2@gmail.com',
-      'studentagnes@gmail.com',
-      'studentmiche@gmail.com',
-    ];
-    const getStudentNotificationList = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: data,
-      message: 'Retrieve student common successfully',
-    });
-
-    studentService.mockImplementation(() => {
-      return {
-        getStudentNotificationList: getStudentNotificationList,
-      };
-    });
-
-    const studentController = new StudentController();
     await Promise.resolve(
-      studentController.getNotificationList(
+      StudentController.getNotificationList(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -613,12 +586,11 @@ describe('Test getNotificationList controller function', () => {
     });
   });
 
-  test('Should return a list of email mentioned in notification and registered student email without any repetitions.', async () => {
+  test('Should return a list of existing email mentioned in notification and registered student email without any repetitions.', async () => {
     mockRequest = {
       body: {
         teacher: 'teacherken@gmail.com',
-        notification:
-          'Hello students! @studentagnes@gmail.com@studentagnes@gmail.com',
+        notification: 'Hello students! @student1@gmail.com @student1@gmail.com',
       },
     };
 
@@ -629,39 +601,30 @@ describe('Test getNotificationList controller function', () => {
       mockNext
     ); // Input Validations
 
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
 
     const data = [
       'commonstudent1@gmail.com',
       'commonstudent2@gmail.com',
-      'studentagnes@gmail.com',
+      'student1@gmail.com',
     ];
 
-    const getStudentNotificationList = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: data,
-      message: 'Retrieve student common successfully',
-    });
+    const getStudentNotificationList = jest
+      .spyOn(StudentService.prototype, 'getStudentNotificationList')
+      .mockResolvedValueOnce({
+        status: true,
+        data: data,
+        message: 'Retrieve student common successfully',
+      });
 
-    studentService.mockImplementation(() => {
-      return {
-        getStudentNotificationList: getStudentNotificationList,
-      };
-    });
-
-    const studentController = new StudentController();
     await Promise.resolve(
-      studentController.getNotificationList(
+      StudentController.getNotificationList(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -671,7 +634,7 @@ describe('Test getNotificationList controller function', () => {
     expect(getByEmail).toHaveBeenCalledTimes(1);
     expect(getStudentNotificationList).toHaveBeenCalledTimes(1);
     expect(getStudentNotificationList).toHaveBeenLastCalledWith(1, [
-      'studentagnes@gmail.com',
+      'student1@gmail.com',
     ]);
     expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.OK);
     expect(mockResponse.json).toHaveBeenCalledWith({
@@ -694,35 +657,26 @@ describe('Test getNotificationList controller function', () => {
       mockNext
     ); // Input Validations
 
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
 
     const data: string[] = [];
 
-    const getStudentNotificationList = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: data,
-      message: 'Retrieve student common successfully',
-    });
+    const getStudentNotificationList = jest
+      .spyOn(StudentService.prototype, 'getStudentNotificationList')
+      .mockResolvedValueOnce({
+        status: true,
+        data: data,
+        message: 'Retrieve student common successfully',
+      });
 
-    studentService.mockImplementation(() => {
-      return {
-        getStudentNotificationList: getStudentNotificationList,
-      };
-    });
-
-    const studentController = new StudentController();
     await Promise.resolve(
-      studentController.getNotificationList(
+      StudentController.getNotificationList(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -757,31 +711,26 @@ describe('Test getNotificationList controller function', () => {
       'Teacher does not exist.',
       StatusCodes.OK
     );
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error: getByEmailError,
-    });
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
+
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: false,
+        error: getByEmailError,
+      });
 
     const data: string[] = [];
-    const getStudentNotificationList = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: data,
-      message: 'Retrieve student common successfully',
-    });
-    studentService.mockImplementation(() => {
-      return {
-        getStudentNotificationList: getStudentNotificationList,
-      };
-    });
 
-    const studentController = new StudentController();
+    const getStudentNotificationList = jest
+      .spyOn(StudentService.prototype, 'getStudentNotificationList')
+      .mockResolvedValueOnce({
+        status: true,
+        data: data,
+        message: 'Retrieve student common successfully',
+      });
+
     await Promise.resolve(
-      studentController.getNotificationList(
+      StudentController.getNotificationList(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -809,34 +758,24 @@ describe('Test getNotificationList controller function', () => {
       mockNext
     ); // Input Validations
 
-    const getByEmail = jest.fn().mockResolvedValueOnce({
-      status: true,
-      data: { teacher_id: 1 },
-      message: 'Retrieve teacher successfully.',
-    });
-    teacherService.mockImplementation(() => {
-      return {
-        getByEmail: getByEmail,
-      };
-    });
+    const getByEmail = jest
+      .spyOn(TeacherService.prototype, 'getByEmail')
+      .mockResolvedValueOnce({
+        status: true,
+        data: { teacher_id: 1 } as Teacher,
+        message: 'Retrieve teacher successfully.',
+      });
 
     const error = new Error('Internal Server Error');
-
-    const getStudentNotificationList = jest.fn().mockResolvedValueOnce({
-      status: false,
-      error,
-    });
-
-    studentService.mockImplementation(() => {
-      return {
-        getStudentNotificationList: getStudentNotificationList,
-      };
-    });
-
-    const studentController = new StudentController();
+    const getStudentNotificationList = jest
+      .spyOn(StudentService.prototype, 'getStudentNotificationList')
+      .mockResolvedValueOnce({
+        status: false,
+        error,
+      });
 
     await Promise.resolve(
-      studentController.getNotificationList(
+      StudentController.getNotificationList(
         mockRequest as Request,
         mockResponse as Response,
         mockNext

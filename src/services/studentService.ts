@@ -17,13 +17,13 @@ import { Sequelize } from 'sequelize-typescript';
 const LOG = new Logger('studentService.ts');
 
 export class StudentService {
-  register = async ({
+  public async register({
     students,
     teacherId,
   }: {
     students: string[];
     teacherId: number;
-  }) => {
+  }) {
     const t = await sequelize.transaction();
     try {
       if (students.length > 0) {
@@ -60,9 +60,9 @@ export class StudentService {
       LOG.error(error);
       return { status: false, error };
     }
-  };
+  }
 
-  getCommonStudent = async (teacher: string[]) => {
+  public async getCommonStudent(teacher: string[]) {
     try {
       const students = await TeacherStudentRelationship.findAll({
         include: [
@@ -82,30 +82,20 @@ export class StudentService {
           },
         ],
         attributes: [[Sequelize.col('student.student_email'), 'student_email']],
+        group: ['student.student_email'],
+        having: Sequelize.literal(
+          `COUNT(student.student_email) = ${teacher.length}`
+        ),
         raw: true,
       });
 
-      const common: { [email: string]: number } = {};
-      students.forEach(
-        ({
-          student_email,
-        }: TeacherStudentRelationshipModel & {
-          student_email?: string;
-        }) => {
-          if (common[student_email] !== undefined) {
-            common[student_email] = common[student_email] + 1; 
-          } else {
-            common[student_email] = 1;
+      const data: string[] = students.map(
+        (
+          student: TeacherStudentRelationshipModel & {
+            student_email?: string;
           }
-        }
+        ) => student.student_email
       );
-
-      const data: string[] = [];
-      for (const [key, val] of Object.entries(common)) {
-        if (val > 0 && val === teacher.length) {
-          data.push(key);
-        }
-      }
 
       return {
         status: true,
@@ -119,9 +109,9 @@ export class StudentService {
         error,
       };
     }
-  };
+  }
 
-  suspend = async (studentEmail: string) => {
+  public async suspend(studentEmail: string) {
     const t = await sequelize.transaction();
     try {
       const student = await Student.findOne({
@@ -171,54 +161,59 @@ export class StudentService {
         error,
       };
     }
-  };
+  }
 
-  getStudentNotificationList = async (
+  public async getStudentNotificationList(
     teacherId: number,
     studentEmails: string[]
-  ) => {
+  ) {
     try {
-      const registeredStudents = await TeacherStudentRelationship.findAll({
+      const existedStudentsPromise = Student.findAll({
+        where: {
+          student_email: {
+            [Op.in]: studentEmails,
+          },
+          student_status: STUDENT_STATUS.ACTIVE,
+        },
+        attributes: ['student_email'],
+        raw: true,
+      });
+
+      const registeredStudentsPromise = TeacherStudentRelationship.findAll({
         where: {
           teacher_id: teacherId,
         },
         include: [
           {
             model: Student,
+            where: {
+              student_email: { [Op.notIn]: studentEmails },
+              student_status: STUDENT_STATUS.ACTIVE,
+            },
             attributes: [],
           },
         ],
-        attributes: [
-          [Sequelize.col('student.student_email'), 'student_email'],
-          [Sequelize.col('student.student_status'), 'student_status'],
-        ],
+        attributes: [[Sequelize.col('student.student_email'), 'student_email']],
         raw: true,
       });
 
-      const studentEmailSet = new Set(studentEmails);
-      const registeredEmails: string[] = [];
+      const [existedStudents, registeredStudents] = await Promise.all([
+        existedStudentsPromise,
+        registeredStudentsPromise,
+      ]);
 
-      registeredStudents.forEach(
-        ({
-          student_email,
-          student_status,
-        }: Partial<TeacherStudentRelationship> & {
-          student_email?: string;
-          student_status?: number;
-        }) => {
-          if (studentEmailSet.has(student_email)) {
-            if (student_status === STUDENT_STATUS.ACTIVE) {
-              registeredEmails.push(student_email);
-            } else {
-              studentEmailSet.delete(student_email);
-            }
-          } else if (student_status === STUDENT_STATUS.ACTIVE) {
-            registeredEmails.push(student_email);
+      const existedStudentEmails: string[] = existedStudents.map(
+        (student) => student.student_email
+      );
+      const registeredStudentEmails: string[] = registeredStudents.map(
+        (
+          student: Partial<TeacherStudentRelationship> & {
+            student_email?: string;
           }
-        }
+        ) => student.student_email
       );
 
-      const data = [...studentEmailSet].concat(registeredEmails);
+      const data = existedStudentEmails.concat(registeredStudentEmails);
 
       return {
         status: true,
@@ -232,5 +227,5 @@ export class StudentService {
         error,
       };
     }
-  };
+  }
 }

@@ -185,10 +185,7 @@ describe('POST /api/commonstudents', () => {
     expect(res.type).toEqual(expect.stringContaining('json'));
     expect(res.body).toEqual({
       students: expect.arrayContaining([
-        'commonstudent1@gmail.com',
         'commonstudent2@gmail.com',
-        'commonstudent5@gmail.com',
-        'commonstudent3@gmail.com',
       ]),
     });
   });
@@ -342,7 +339,7 @@ describe('POST /api/retrievefornotifications', () => {
     });
   });
 
-  test('Should return a list of registered student email only.', async () => {
+  test('Should return a list of registered and unsuspended student email only.', async () => {
     const res = await supertestRequest.post(`${apiBasePath}${path}`).send({
       teacher: 'teacherken@gmail.com',
       notification: 'Hello students',
@@ -358,11 +355,11 @@ describe('POST /api/retrievefornotifications', () => {
     });
   });
 
-  test('Should return a list of email mentioned in notification and registered student email.', async () => {
+  test('Should return a list of existing email mentioned in notification and registered student email.', async () => {
     const res = await supertestRequest.post(`${apiBasePath}${path}`).send({
       teacher: 'teacherken@gmail.com',
       notification:
-        'Hello students! @studentagnes@gmail.com @studentmiche@gmail.com',
+        'Hello students! @commonstudent3@gmail.com @studentmiche@gmail.com',
     });
 
     expect(res.status).toEqual(200);
@@ -371,17 +368,16 @@ describe('POST /api/retrievefornotifications', () => {
       recipients: expect.arrayContaining([
         'commonstudent1@gmail.com',
         'commonstudent2@gmail.com',
-        'studentagnes@gmail.com',
-        'studentmiche@gmail.com',
+        'commonstudent3@gmail.com',
       ]),
     });
   });
 
-  test('Should return a list of email mentioned in notification and registered student email without any repetitions.', async () => {
+  test('Should return a list of existed email mentioned in notification and registered student email without any repetitions.', async () => {
     const res = await supertestRequest.post(`${apiBasePath}${path}`).send({
       teacher: 'teacherken@gmail.com',
       notification:
-        'Hello students! @studentagnes@gmail.com@studentagnes@gmail.com',
+        'Hello students! @commonstudent3@gmail.com@commonstudent3@gmail.com',
     });
 
     expect(res.status).toEqual(200);
@@ -390,7 +386,7 @@ describe('POST /api/retrievefornotifications', () => {
       recipients: expect.arrayContaining([
         'commonstudent1@gmail.com',
         'commonstudent2@gmail.com',
-        'studentagnes@gmail.com',
+        'commonstudent3@gmail.com',
       ]),
     });
   });
