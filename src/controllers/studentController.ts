@@ -133,35 +133,3 @@ export const StudentController = {
   getNotificationList,
   getCommonStudents,
 };
-
-export class StudentController1 {
-  public static register: RequestHandler = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { students, teacher } = matchedData(req) as StudentRegisterRequest;
-
-      const teacherData = await teacherService.getByEmail(teacher);
-
-      if (!teacherData.status) {
-        throw teacherData.error;
-      }
-
-      const registerStudent = await studentService.register({
-        students,
-        teacherId: teacherData.data.teacher_id,
-      });
-
-      if (!registerStudent.status) {
-        throw registerStudent.error;
-      }
-
-      res.sendStatus(StatusCodes.NO_CONTENT);
-    } catch (error) {
-      LOG.error(error);
-      next(error);
-    }
-  };
-}
